@@ -1,0 +1,4 @@
+out/*
+!out/rom.bin
+src/boot/
+res/*.h

@@ -1,0 +1,18 @@
+{
+    "C_Cpp.default.includePath": [
+        "${env:GDK}\\inc",
+        "${env:GDK}\\res",
+        "res",
+        "inc"
+    ],
+    "files.associations": {
+        "genesis.h": "c",
+        "minunit.h": "c",
+        "functions.h": "c",
+        "constants.h": "c",
+        "types.h": "c",
+        "game_state.h": "c",
+        "typing.h": "c",
+        "drawing.h": "c"
+    }
+}

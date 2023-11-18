@@ -1,0 +1,1 @@
+XGM game_music "vgm/jx_hero_garden.vgm" AUTO
