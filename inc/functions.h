@@ -47,9 +47,6 @@ void moveTetromino(int x, int y, bool silent);
 void rotateTetromino(int direction);
 void solidifyTetromino();
 
-bool checkBottomCollision(int x, int y);
-bool checkWallCollision(int x, int y);
-
 void clearCompletedLines();
 
 int updateGameStateOnCondition(int condition, enum GAME_STATE);

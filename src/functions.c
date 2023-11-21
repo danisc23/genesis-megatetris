@@ -34,6 +34,49 @@ int score = 0;
 int level = 1;
 int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
 
+static bool checkCollisionWithSolidTetrominoParts(int pos_x, int pos_y)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        int seek_y = pos_y + current_tetromino[i].y - GAME_AREA.up - 1;
+        if (seek_y < 0)
+            continue;
+        int seek_x = pos_x + current_tetromino[i].x - GAME_AREA.left - 1;
+
+        if (solid_tetromino_parts[seek_y][seek_x] == 1)
+        {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static bool checkBottomCollision(int pos_x, int pos_y)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        int y = pos_y + current_tetromino[i].y;
+        if (y == GAME_AREA.down)
+        {
+            return TRUE;
+        }
+    }
+    return checkCollisionWithSolidTetrominoParts(pos_x, pos_y);
+}
+
+static bool checkWallCollision(int new_x, int new_y)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        int x = new_x + current_tetromino[i].x;
+        if (x == GAME_AREA.left || x == GAME_AREA.right)
+        {
+            return TRUE;
+        }
+    }
+    return checkCollisionWithSolidTetrominoParts(new_x, new_y);
+}
+
 void prepareNewGame()
 {
     memset(solid_tetromino_parts, 0, sizeof(solid_tetromino_parts));
@@ -171,47 +214,11 @@ void solidifyTetromino()
         int y = current_y + current_tetromino[i].y;
         x -= GAME_AREA.left + 1;
         y -= GAME_AREA.up + 1;
-        solid_tetromino_parts[y][x] = 1;
-        int game_over = updateGameStateOnCondition(y == 0, GAME_STATE_GAME_OVER);
-        if (game_over)
+        if (updateGameStateOnCondition(y <= 0, GAME_STATE_GAME_OVER))
             break;
-    }
-}
 
-bool checkBottomCollision(int pos_x, int pos_y)
-{
-    for (int i = 0; i < 4; i++)
-    {
-        int y = pos_y + current_tetromino[i].y;
-        if (y == GAME_AREA.down)
-        {
-            return TRUE;
-        }
-        int x = pos_x + current_tetromino[i].x;
-        if (solid_tetromino_parts[y - GAME_AREA.up - 1][x - GAME_AREA.left - 1] == 1)
-        {
-            return TRUE;
-        }
+        solid_tetromino_parts[y][x] = 1;
     }
-    return FALSE;
-}
-
-bool checkWallCollision(int new_x, int new_y)
-{
-    for (int i = 0; i < 4; i++)
-    {
-        int x = new_x + current_tetromino[i].x;
-        if (x == GAME_AREA.left || x == GAME_AREA.right)
-        {
-            return TRUE;
-        }
-        int y = new_y + current_tetromino[i].y;
-        if (solid_tetromino_parts[y - GAME_AREA.up - 1][x - GAME_AREA.left - 1] == 1)
-        {
-            return TRUE;
-        }
-    }
-    return FALSE;
 }
 
 void clearCompletedLines()
