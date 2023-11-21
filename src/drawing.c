@@ -26,7 +26,8 @@ void drawMainMenuFooter()
     sprintf(hiscore_text, "Hi: %d     ", hiscore);
     VDP_drawText(hiscore_text, 1, MAX_Y - 3);
 
-    VDP_drawText("@danisc23", MAX_X - 10, MAX_Y - 3);
+    VDP_drawText("danisc23", MAX_X - 9, MAX_Y - 3);
+    VDP_drawText("v0.1.1 - 2023", MAX_X - 14, MAX_Y - 2);
 }
 
 void drawMainMenuPointer(int direction)
