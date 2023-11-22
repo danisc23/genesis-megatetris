@@ -11,8 +11,6 @@ extern int hiscore;
 // Current Tetromino
 extern int current_x;
 extern int current_y;
-extern int current_rotation;
-extern int current_tetromino_type;
 extern Position current_tetromino[4];
 
 // Next Tetromino
@@ -34,6 +32,7 @@ extern int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
 
 // Game Logic
 void prepareNewGame();
+void restartMoveDownTimer();
 void moveDown();
 void dropDown();
 void startMoveSideTimer();

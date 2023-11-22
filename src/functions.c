@@ -10,8 +10,8 @@ int hiscore = 0;
 // Current Tetromino
 int current_x;
 int current_y;
-int current_rotation;
-int current_tetromino_type;
+static int current_rotation;
+static int current_tetromino_type;
 Position current_tetromino[4];
 
 // Next Tetromino
@@ -144,24 +144,27 @@ void prepareNewGame()
     spawnTetromino();
 }
 
+void restartMoveDownTimer()
+{
+    startTimer(DROP_DOWN_TIMER);
+    freezed_tick = 0;
+}
+
 void moveDown()
 {
     int tick = getTimer(DROP_DOWN_TIMER, 0) + freezed_tick;
     if (tick < DROP_SPEED - (level * DROP_LEVEL_MODIFIER))
         return;
 
-    freezed_tick = 0;
+    restartMoveDownTimer();
     moveTetromino(0, 1, TRUE);
-    startTimer(DROP_DOWN_TIMER);
 }
 
 void dropDown()
 {
     int y_dir = 0;
     while (!checkBottomCollision(current_x, y_dir + current_y + 1))
-    {
         y_dir++;
-    }
     freezed_tick = DROP_SPEED; // ensure solidifyTetromino() is called next frame
     moveTetromino(0, y_dir, TRUE);
 }
@@ -215,9 +218,7 @@ void moveTetromino(int x, int y, bool silent)
     current_y = bottom_collision ? current_y : new_y;
 
     if (!silent && !wall_collision && !bottom_collision)
-    {
         XGM_startPlayPCM(SFX_ID_MOVE, 1, SOUND_PCM_CH2);
-    }
 
     if (bottom_collision)
     {

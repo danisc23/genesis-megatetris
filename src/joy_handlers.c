@@ -50,7 +50,9 @@ void joyPlaying(u16 joy, u16 changed, u16 state)
     if (x_dir)
         startMoveSideTimer();
 
-    if (up)
+    if (down)
+        restartMoveDownTimer();
+    else if (up)
         dropDown();
 
     rotateTetromino(rotation_dir);
