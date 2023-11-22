@@ -24,9 +24,9 @@ int first_hold;
 
 // Main Menu
 static int selected_option = 0;
-char options[4][20] = {"Start Game", "Show Next: NO", "Level: 1", "Reset Hi-Score"};
-bool draw_next_tetromino = 0;
-int starting_level = 1;
+static int starting_level = 1;
+bool draw_next_tetromino = 1;
+char options[4][20] = {"Start Game", "Show Next: YES", "Level: 1", "Reset Hi-Score"};
 
 // Current Game
 int freezed_tick = 0; // Used to track elapsed time when game is paused

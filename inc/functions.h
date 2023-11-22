@@ -26,7 +26,6 @@ extern int first_hold;
 // Main Menu
 extern char options[4][20];
 extern bool draw_next_tetromino;
-extern int starting_level;
 
 // Current Game
 extern int freezed_tick; // Used to track elapsed time when game is paused

@@ -110,6 +110,9 @@ static void drawNextTetrominoContent()
 
 void drawNextTetromino()
 {
+    if (!draw_next_tetromino)
+        return;
+
     drawNextTetrominoArea();
     drawNextTetrominoContent();
 }
