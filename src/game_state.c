@@ -13,7 +13,6 @@ void stateMenu()
 {
     prepareNextState();
     JOY_setEventHandler(joyMainMenu);
-    selected_option = -1; // TODO: fast fix, check this
     drawMainMenu();
     while (game_state == GAME_STATE_MENU)
     {

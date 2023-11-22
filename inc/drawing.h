@@ -1,7 +1,9 @@
 #ifndef __DRAWING_H
 #define __DRAWING_H
 
-void drawMainMenuPointer(int direction);
+#define OPTIONS_Y_OFFSET 17
+
+void drawMainMenuPointer(int selected_option);
 void drawMainMenu();
 void drawMainMenuFooter();
 void drawUI();

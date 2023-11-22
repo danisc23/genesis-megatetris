@@ -23,8 +23,8 @@ int hold_x_dir;
 int first_hold;
 
 // Main Menu
+static int selected_option = 0;
 char options[4][20] = {"Start Game", "Show Next: NO", "Level: 1", "Reset Hi-Score"};
-int selected_option = -1;
 bool draw_next_tetromino = 0;
 int starting_level = 1;
 
@@ -255,6 +255,18 @@ void clearCompletedLines()
     drawUI();
 }
 
+int updateSelectedOption(int direction)
+{
+    if (direction)
+    {
+        XGM_startPlayPCM(SFX_ID_MOVE, 1, SOUND_PCM_CH2);
+        selected_option += direction;
+        selected_option = selected_option < 0 ? 3 : selected_option;
+        selected_option = selected_option > 3 ? 0 : selected_option;
+    }
+    return selected_option;
+}
+
 int updateGameStateOnCondition(int change, enum GAME_STATE state)
 {
     if (change)
@@ -269,6 +281,8 @@ void triggerSelectedOptionOnCondition(int condition)
     // that belong to different domains (game and drawing) :thinking:
     if (!condition)
         return;
+
+    XGM_startPlayPCM(SFX_ID_MOVE, 1, SOUND_PCM_CH2);
 
     if (selected_option == 0)
         updateGameStateOnCondition(condition, GAME_STATE_PLAYING);

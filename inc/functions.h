@@ -25,7 +25,6 @@ extern int first_hold;
 
 // Main Menu
 extern char options[4][20];
-extern int selected_option;
 extern bool draw_next_tetromino;
 extern int starting_level;
 
@@ -50,6 +49,7 @@ void solidifyTetromino();
 void clearCompletedLines();
 
 int updateGameStateOnCondition(int condition, enum GAME_STATE);
+int updateSelectedOption(int direction);
 void triggerSelectedOptionOnCondition(int condition);
 
 #endif // __FUNCTIONS_H

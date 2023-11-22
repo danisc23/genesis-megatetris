@@ -1,6 +1,8 @@
 #include "functions.h"
 #include "drawing.h"
 
+static int last_drawn_pointer = OPTIONS_Y_OFFSET;
+
 static void drawMainMenuTitle()
 {
     VDP_drawText(TITLE_1, 0, 2);
@@ -14,10 +16,8 @@ static void drawMainMenuTitle()
 
 static void drawMainMenuOptions()
 {
-    VDP_drawText(options[0], 14, 17);
-    VDP_drawText(options[1], 14, 18);
-    VDP_drawText(options[2], 14, 19);
-    VDP_drawText(options[3], 14, 20);
+    for (int i = 0; i < 4; i++)
+        VDP_drawText(options[i], 14, OPTIONS_Y_OFFSET + i);
 }
 
 void drawMainMenuFooter()
@@ -30,24 +30,18 @@ void drawMainMenuFooter()
     VDP_drawText("v0.1.1 - 2023", MAX_X - 14, MAX_Y - 2);
 }
 
-void drawMainMenuPointer(int direction)
+void drawMainMenuPointer(int selected_option)
 {
-    // TODO: looks like a core function (except VDP stuff)
-    if (!direction)
-        return;
-
-    VDP_clearTextBG(BG_B, 12, 17 + selected_option, 1);
-    selected_option += direction;
-    selected_option = selected_option < 0 ? 3 : selected_option;
-    selected_option = selected_option > 3 ? 0 : selected_option;
-    VDP_drawTextBG(BG_B, ">", 12, 17 + selected_option);
+    VDP_clearTextBG(BG_B, 12, last_drawn_pointer, 1);
+    last_drawn_pointer = OPTIONS_Y_OFFSET + selected_option;
+    VDP_drawTextBG(BG_B, ">", 12, last_drawn_pointer);
 }
 
 void drawMainMenu()
 {
     drawMainMenuTitle();
     drawMainMenuOptions();
-    drawMainMenuPointer(1);
+    drawMainMenuPointer(0);
     drawMainMenuFooter();
 }
 
