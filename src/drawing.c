@@ -133,6 +133,12 @@ void drawSolidifiedTetrominoParts()
     }
 }
 
+void clearGameScreen()
+{
+    VDP_clearTextArea(0, 0, MAX_X, MAX_Y);
+    VDP_clearTextAreaBG(BG_B, 0, 0, MAX_X, MAX_Y);
+}
+
 void clearGameArea()
 {
     VDP_clearTextArea(GAME_AREA.left + 1, GAME_AREA.up + 1, GAME_AREA.right - GAME_AREA.left - 1, GAME_AREA.down - GAME_AREA.up - 1);

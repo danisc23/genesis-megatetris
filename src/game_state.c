@@ -6,9 +6,7 @@
 static void prepareNextState()
 {
     JOY_setEventHandler(NULL);
-    // TODO: looks like a draw function
-    VDP_clearTextArea(0, 0, MAX_X, MAX_Y);
-    VDP_clearTextAreaBG(BG_B, 0, 0, MAX_X, MAX_Y);
+    clearGameScreen();
 }
 
 void stateMenu()
