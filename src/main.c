@@ -3,29 +3,34 @@
 #include "music.h"
 #include "sfx.h"
 
-int main()
+static void initSound()
 {
-  JOY_init();
-  VDP_setScreenWidth320();
   XGM_startPlay(game_music);
   XGM_setPCM(SFX_ID_CLEAR_LINE, line_clear_sfx, sizeof(line_clear_sfx));
   XGM_setPCM(SFX_ID_SOLIDIFY, solidify_sfx, sizeof(solidify_sfx));
   XGM_setPCM(SFX_ID_MOVE, move_sfx, sizeof(move_sfx));
+}
+
+int main()
+{
+  JOY_init();
+  VDP_setScreenWidth320();
+  initSound();
 
   while (1)
   {
     switch (game_state)
     {
-    case 0: // TODO: Use game_state enum
+    case GAME_STATE_MENU:
       stateMenu();
       break;
-    case 1:
+    case GAME_STATE_PLAYING:
       statePlaying();
       break;
-    case 2:
+    case GAME_STATE_PAUSED:
       statePause();
       break;
-    case 3:
+    case GAME_STATE_GAME_OVER:
       stateGameOver();
       break;
     }
