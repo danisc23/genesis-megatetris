@@ -15,9 +15,8 @@ void stateMenu()
     JOY_setEventHandler(joyMainMenu);
     drawMainMenu();
     while (game_state == GAME_STATE_MENU)
-    {
         SYS_doVBlankProcess();
-    }
+
     prepareNewGame();
 }
 
@@ -48,9 +47,7 @@ void statePause()
     VDP_drawText("PAUSE", 18, 13);
     freezed_tick += getTimer(DROP_DOWN_TIMER, 0);
     while (game_state == GAME_STATE_PAUSED)
-    {
         SYS_doVBlankProcess();
-    }
 }
 
 void stateGameOver()
@@ -62,7 +59,5 @@ void stateGameOver()
     VDP_drawText("GAME OVER", 15, 10);
     VDP_drawText("PRESS START", 14, 20);
     while (game_state == GAME_STATE_GAME_OVER)
-    {
         SYS_doVBlankProcess();
-    }
 }

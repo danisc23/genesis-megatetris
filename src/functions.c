@@ -19,8 +19,8 @@ Position next_tetromino[4];
 int next_tetromino_type = -1;
 
 // Horizontal Constant Movement
+static int first_hold;
 int hold_x_dir;
-int first_hold;
 
 // Main Menu
 static int selected_option = 0;
@@ -77,6 +77,65 @@ static bool checkWallCollision(int new_x, int new_y)
     return checkCollisionWithSolidTetrominoParts(new_x, new_y);
 }
 
+static void clearCompletedLines()
+{
+    int new_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+    memset(new_tetromino_parts, 0, sizeof(new_tetromino_parts));
+    int next_new_y = GAME_GRID_Y - 1;
+    int lines_cleared = 0;
+
+    for (int y = GAME_GRID_Y - 1; y >= 0; y--)
+    {
+        bool completed_line = TRUE;
+        for (int x = 0; x < GAME_GRID_X; x++)
+        {
+            if (solid_tetromino_parts[y][x] == 0)
+            {
+                memcpy(new_tetromino_parts[next_new_y], solid_tetromino_parts[y], sizeof(solid_tetromino_parts[y]));
+                next_new_y--;
+                completed_line = FALSE;
+                break;
+            }
+        }
+        if (completed_line)
+            lines_cleared++;
+    }
+    memcpy(solid_tetromino_parts, new_tetromino_parts, sizeof(solid_tetromino_parts));
+    if (!lines_cleared)
+        return;
+
+    XGM_startPlayPCM(SFX_ID_CLEAR_LINE, 1, SOUND_PCM_CH2);
+    score += (lines_cleared * lines_cleared) * 100;
+    level = score / 1000 + starting_level;
+    level = level > 10 ? 10 : level;
+    drawUI();
+}
+
+static void setTetromino(int tetromino_type, int rotation, Position *tetromino)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        tetromino[i] = TETROMINOES[tetromino_type][rotation][i];
+    }
+}
+
+static void spawnTetromino()
+{
+    current_rotation = 0;
+    if (next_tetromino_type == -1)
+    {
+        setRandomSeed(getTick());
+        next_tetromino_type = random() % 7;
+    }
+    current_tetromino_type = next_tetromino_type;
+    next_tetromino_type = random() % 7;
+    setTetromino(current_tetromino_type, current_rotation, current_tetromino);
+    setTetromino(next_tetromino_type, 0, next_tetromino);
+    current_x = GAME_AREA_LEFT + (GAME_GRID_X / 2);
+    current_y = GAME_AREA_UP + 1;
+    drawNextTetromino();
+}
+
 void prepareNewGame()
 {
     memset(solid_tetromino_parts, 0, sizeof(solid_tetromino_parts));
@@ -125,28 +184,19 @@ void moveSide()
     startTimer(HOLD_TIMER);
 }
 
-void spawnTetromino()
+static void solidifyTetromino()
 {
-    current_rotation = 0;
-    if (next_tetromino_type == -1)
-    {
-        setRandomSeed(getTick());
-        next_tetromino_type = random() % 7;
-    }
-    current_tetromino_type = next_tetromino_type;
-    next_tetromino_type = random() % 7;
-    setTetromino(current_tetromino_type, current_rotation, current_tetromino);
-    setTetromino(next_tetromino_type, 0, next_tetromino);
-    current_x = GAME_AREA_LEFT + (GAME_GRID_X / 2);
-    current_y = GAME_AREA_UP + 1;
-    drawNextTetromino();
-}
-
-void setTetromino(int tetromino_type, int rotation, Position *tetromino)
-{
+    XGM_startPlayPCM(SFX_ID_SOLIDIFY, 1, SOUND_PCM_CH3);
     for (int i = 0; i < 4; i++)
     {
-        tetromino[i] = TETROMINOES[tetromino_type][rotation][i];
+        int x = current_x + current_tetromino[i].x;
+        int y = current_y + current_tetromino[i].y;
+        x -= GAME_AREA.left + 1;
+        y -= GAME_AREA.up + 1;
+        if (updateGameStateOnCondition(y <= 0, GAME_STATE_GAME_OVER))
+            break;
+
+        solid_tetromino_parts[y][x] = 1;
     }
 }
 
@@ -203,56 +253,6 @@ void rotateTetromino(int direction)
     current_x -= 2;
     current_rotation = (current_rotation + (2 * direction)) % 4;
     rotateTetromino(direction);
-}
-
-void solidifyTetromino()
-{
-    XGM_startPlayPCM(SFX_ID_SOLIDIFY, 1, SOUND_PCM_CH3);
-    for (int i = 0; i < 4; i++)
-    {
-        int x = current_x + current_tetromino[i].x;
-        int y = current_y + current_tetromino[i].y;
-        x -= GAME_AREA.left + 1;
-        y -= GAME_AREA.up + 1;
-        if (updateGameStateOnCondition(y <= 0, GAME_STATE_GAME_OVER))
-            break;
-
-        solid_tetromino_parts[y][x] = 1;
-    }
-}
-
-void clearCompletedLines()
-{
-    int new_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
-    memset(new_tetromino_parts, 0, sizeof(new_tetromino_parts));
-    int next_new_y = GAME_GRID_Y - 1;
-    int lines_cleared = 0;
-
-    for (int y = GAME_GRID_Y - 1; y >= 0; y--)
-    {
-        bool completed_line = TRUE;
-        for (int x = 0; x < GAME_GRID_X; x++)
-        {
-            if (solid_tetromino_parts[y][x] == 0)
-            {
-                memcpy(new_tetromino_parts[next_new_y], solid_tetromino_parts[y], sizeof(solid_tetromino_parts[y]));
-                next_new_y--;
-                completed_line = FALSE;
-                break;
-            }
-        }
-        if (completed_line)
-            lines_cleared++;
-    }
-    memcpy(solid_tetromino_parts, new_tetromino_parts, sizeof(solid_tetromino_parts));
-    if (!lines_cleared)
-        return;
-
-    XGM_startPlayPCM(SFX_ID_CLEAR_LINE, 1, SOUND_PCM_CH2);
-    score += (lines_cleared * lines_cleared) * 100;
-    level = score / 1000 + starting_level;
-    level = level > 10 ? 10 : level;
-    drawUI();
 }
 
 int updateSelectedOption(int direction)

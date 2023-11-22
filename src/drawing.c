@@ -96,7 +96,7 @@ static void drawNextTetrominoArea()
 
 static void drawNextTetrominoContent()
 {
-    // TODO: This looks pochito, also should use constants
+    // TODO: This looks bad, also should use constants
     int fixed_y = next_tetromino_type == 0 ? 1 : 0;
     int fixed_x = next_tetromino_type == 6 ? -1 : 0;
     int fixed_rotation = next_tetromino_type == 6 ? 3 : 0;
