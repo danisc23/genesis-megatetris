@@ -87,16 +87,10 @@ void drawCurrentTetromino()
     }
 }
 
-void drawNextTetromino()
+static void drawNextTetrominoArea()
 {
-    // TODO: Looking at the comments below, this should be composed of two static functions
-    if (!draw_next_tetromino)
-        return;
-
-    // Draw Area Border
+    char horizontal[7] = "------";
     VDP_clearTextArea(GAME_AREA_RIGHT + 2, GAME_AREA_UP + 1, 5, 4);
-    char horizontal[6];
-    memset(horizontal, '-', 6);
     VDP_drawText(horizontal, GAME_AREA_RIGHT + 2, GAME_AREA_UP);
     VDP_drawText(horizontal, GAME_AREA_RIGHT + 2, GAME_AREA_UP + 6);
     for (int i = GAME_AREA_UP + 1; i < GAME_AREA_UP + 6; i++)
@@ -104,8 +98,10 @@ void drawNextTetromino()
         VDP_drawText("|", GAME_AREA_RIGHT + 2, i);
         VDP_drawText("|", GAME_AREA_RIGHT + 7, i);
     }
+}
 
-    // Draw Next Tetromino
+static void drawNextTetrominoContent()
+{
     // TODO: This looks pochito, also should use constants
     int fixed_y = next_tetromino_type == 0 ? 1 : 0;
     int fixed_x = next_tetromino_type == 6 ? -1 : 0;
@@ -116,6 +112,12 @@ void drawNextTetromino()
         int y = GAME_AREA_UP + 2 + TETROMINOES[next_tetromino_type][fixed_rotation][i].y + fixed_y;
         VDP_drawText("O", x, y);
     }
+}
+
+void drawNextTetromino()
+{
+    drawNextTetrominoArea();
+    drawNextTetrominoContent();
 }
 
 void drawSolidifiedTetrominoParts()
