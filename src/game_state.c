@@ -49,6 +49,7 @@ void statePause()
     drawUI();
     drawGameArea();
     VDP_drawText("PAUSE", 18, 13);
+    // TODO: freezed_tick should be updated in a function and not be a global variable
     freezed_tick += getTimer(DROP_DOWN_TIMER, 0);
     while (game_state == GAME_STATE_PAUSED)
     {
