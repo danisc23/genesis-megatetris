@@ -18,8 +18,10 @@ void joyMainMenu(u16 joy, u16 changed, u16 state)
     int b_pressed = changed & BUTTON_B;
     int c_pressed = changed & BUTTON_C;
 
-    XGM_startPlayPCM(66, 1, SOUND_PCM_CH2);
-    drawMainMenuPointer(down - up);
+    int pointer_dir = down - up;
+    if (pointer_dir)
+        drawMainMenuPointer(updateSelectedOption(pointer_dir));
+
     triggerSelectedOptionOnCondition(start_pressed || a_pressed || b_pressed || c_pressed);
 }
 

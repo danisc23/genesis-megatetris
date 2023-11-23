@@ -19,13 +19,10 @@ extern int next_tetromino_type;
 
 // Horizontal Constant Movement
 extern int hold_x_dir;
-extern int first_hold;
 
 // Main Menu
 extern char options[4][20];
-extern int selected_option;
 extern bool draw_next_tetromino;
-extern int starting_level;
 
 // Current Game
 extern int freezed_tick; // Used to track elapsed time when game is paused
@@ -40,15 +37,11 @@ void moveDown();
 void dropDown();
 void startMoveSideTimer();
 void moveSide();
-void spawnTetromino();
-void setTetromino(int tetromino_type, int, Position *tetromino);
 void moveTetromino(int x, int y, bool silent);
 void rotateTetromino(int direction);
-void solidifyTetromino();
-
-void clearCompletedLines();
 
 int updateGameStateOnCondition(int condition, enum GAME_STATE);
+int updateSelectedOption(int direction);
 void triggerSelectedOptionOnCondition(int condition);
 
 #endif // __FUNCTIONS_H

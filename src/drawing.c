@@ -1,6 +1,8 @@
 #include "functions.h"
 #include "drawing.h"
 
+static int last_drawn_pointer = OPTIONS_Y_OFFSET;
+
 static void drawMainMenuTitle()
 {
     VDP_drawText(TITLE_1, 0, 2);
@@ -14,10 +16,8 @@ static void drawMainMenuTitle()
 
 static void drawMainMenuOptions()
 {
-    VDP_drawText(options[0], 14, 17);
-    VDP_drawText(options[1], 14, 18);
-    VDP_drawText(options[2], 14, 19);
-    VDP_drawText(options[3], 14, 20);
+    for (int i = 0; i < 4; i++)
+        VDP_drawText(options[i], 14, OPTIONS_Y_OFFSET + i);
 }
 
 void drawMainMenuFooter()
@@ -30,24 +30,18 @@ void drawMainMenuFooter()
     VDP_drawText("v0.1.1 - 2023", MAX_X - 14, MAX_Y - 2);
 }
 
-void drawMainMenuPointer(int direction)
+void drawMainMenuPointer(int selected_option)
 {
-    // TODO: looks like a core function (except VDP stuff)
-    if (!direction)
-        return;
-
-    VDP_clearTextBG(BG_B, 12, 17 + selected_option, 1);
-    selected_option += direction;
-    selected_option = selected_option < 0 ? 3 : selected_option;
-    selected_option = selected_option > 3 ? 0 : selected_option;
-    VDP_drawTextBG(BG_B, ">", 12, 17 + selected_option);
+    VDP_clearTextBG(BG_B, 12, last_drawn_pointer, 1);
+    last_drawn_pointer = OPTIONS_Y_OFFSET + selected_option;
+    VDP_drawTextBG(BG_B, ">", 12, last_drawn_pointer);
 }
 
 void drawMainMenu()
 {
     drawMainMenuTitle();
     drawMainMenuOptions();
-    drawMainMenuPointer(1);
+    drawMainMenuPointer(0);
     drawMainMenuFooter();
 }
 
@@ -87,16 +81,10 @@ void drawCurrentTetromino()
     }
 }
 
-void drawNextTetromino()
+static void drawNextTetrominoArea()
 {
-    // TODO: Looking at the comments below, this should be composed of two static functions
-    if (!draw_next_tetromino)
-        return;
-
-    // Draw Area Border
+    char horizontal[7] = "------";
     VDP_clearTextArea(GAME_AREA_RIGHT + 2, GAME_AREA_UP + 1, 5, 4);
-    char horizontal[6];
-    memset(horizontal, '-', 6);
     VDP_drawText(horizontal, GAME_AREA_RIGHT + 2, GAME_AREA_UP);
     VDP_drawText(horizontal, GAME_AREA_RIGHT + 2, GAME_AREA_UP + 6);
     for (int i = GAME_AREA_UP + 1; i < GAME_AREA_UP + 6; i++)
@@ -104,9 +92,11 @@ void drawNextTetromino()
         VDP_drawText("|", GAME_AREA_RIGHT + 2, i);
         VDP_drawText("|", GAME_AREA_RIGHT + 7, i);
     }
+}
 
-    // Draw Next Tetromino
-    // TODO: This looks pochito, also should use constants
+static void drawNextTetrominoContent()
+{
+    // TODO: This looks bad, also should use constants
     int fixed_y = next_tetromino_type == 0 ? 1 : 0;
     int fixed_x = next_tetromino_type == 6 ? -1 : 0;
     int fixed_rotation = next_tetromino_type == 6 ? 3 : 0;
@@ -116,6 +106,15 @@ void drawNextTetromino()
         int y = GAME_AREA_UP + 2 + TETROMINOES[next_tetromino_type][fixed_rotation][i].y + fixed_y;
         VDP_drawText("O", x, y);
     }
+}
+
+void drawNextTetromino()
+{
+    if (!draw_next_tetromino)
+        return;
+
+    drawNextTetrominoArea();
+    drawNextTetrominoContent();
 }
 
 void drawSolidifiedTetrominoParts()
@@ -129,6 +128,12 @@ void drawSolidifiedTetrominoParts()
                 VDP_drawText("0", x + GAME_AREA.left + 1, y + GAME_AREA.up + 1);
         }
     }
+}
+
+void clearGameScreen()
+{
+    VDP_clearTextArea(0, 0, MAX_X, MAX_Y);
+    VDP_clearTextAreaBG(BG_B, 0, 0, MAX_X, MAX_Y);
 }
 
 void clearGameArea()
