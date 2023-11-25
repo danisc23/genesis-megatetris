@@ -5,6 +5,10 @@
 
 static void prepareNextState()
 {
+    // Clean hold_x_dir and hold_y_dir
+    hold_x_dir = 0;
+    hold_y_dir = 0;
+
     JOY_setEventHandler(NULL);
     clearGameScreen();
 }
