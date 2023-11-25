@@ -17,8 +17,9 @@ extern Position current_tetromino[4];
 extern Position next_tetromino[4];
 extern int next_tetromino_type;
 
-// Horizontal Constant Movement
+// Constant Movement
 extern int hold_x_dir;
+extern int hold_y_dir;
 
 // Main Menu
 extern char options[4][20];
@@ -35,7 +36,7 @@ void prepareNewGame();
 void restartMoveDownTimer();
 void moveDown();
 void dropDown();
-void startMoveSideTimer();
+void startMoveSideTimer(int x_dir);
 void moveSide();
 void moveTetromino(int x, int y, bool silent);
 void rotateTetromino(int direction);

@@ -18,9 +18,10 @@ Position current_tetromino[4];
 Position next_tetromino[4];
 int next_tetromino_type = -1;
 
-// Horizontal Constant Movement
+// Constant Movement
 static int first_hold;
 int hold_x_dir;
+int hold_y_dir;
 
 // Main Menu
 static int selected_option = 0;
@@ -152,12 +153,14 @@ void restartMoveDownTimer()
 
 void moveDown()
 {
-    int tick = getTimer(DROP_DOWN_TIMER, 0) + freezed_tick;
-    if (tick < DROP_SPEED - (level * DROP_LEVEL_MODIFIER))
+    int tick = (getTimer(DROP_DOWN_TIMER, 0) + freezed_tick);
+    int drop_speed = DROP_SPEED - (level * DROP_LEVEL_MODIFIER);
+    drop_speed = hold_y_dir ? min(drop_speed / 2, HOLD_MOVE_SPEED) : drop_speed;
+    if (tick < drop_speed)
         return;
 
     restartMoveDownTimer();
-    moveTetromino(0, 1, TRUE);
+    moveTetromino(0, 1, !hold_y_dir);
 }
 
 void dropDown()
@@ -169,8 +172,9 @@ void dropDown()
     moveTetromino(0, y_dir, TRUE);
 }
 
-void startMoveSideTimer()
+void startMoveSideTimer(int x_dir)
 {
+    hold_x_dir = x_dir;
     startTimer(HOLD_TIMER);
     first_hold = TRUE;
 }
