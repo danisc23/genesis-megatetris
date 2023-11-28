@@ -3,6 +3,9 @@
 
 static int last_drawn_pointer = OPTIONS_Y_OFFSET;
 
+// Used to reduce flickering on redraws
+static int drawn_solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+
 static void drawMainMenuTitle()
 {
     VDP_drawText(TITLE_1, 0, 2);
@@ -16,7 +19,7 @@ static void drawMainMenuTitle()
 
 static void drawMainMenuOptions()
 {
-    for (int i = 0; i < 4; i++)
+    for (u8 i = 0; i < sizeof(options); i++)
         VDP_drawText(options[i], 14, OPTIONS_Y_OFFSET + i);
 }
 
@@ -41,7 +44,7 @@ void drawMainMenu()
 {
     drawMainMenuTitle();
     drawMainMenuOptions();
-    drawMainMenuPointer(0);
+    drawMainMenuPointer(last_drawn_pointer - OPTIONS_Y_OFFSET);
     drawMainMenuFooter();
 }
 
@@ -102,8 +105,8 @@ static void drawNextTetrominoContent()
     int fixed_rotation = next_tetromino_type == 6 ? 3 : 0;
     for (int i = 0; i < 4; i++)
     {
-        int x = GAME_AREA_RIGHT + 4 + TETROMINOES[next_tetromino_type][fixed_rotation][i].x + fixed_x;
-        int y = GAME_AREA_UP + 2 + TETROMINOES[next_tetromino_type][fixed_rotation][i].y + fixed_y;
+        u16 x = GAME_AREA_RIGHT + 4 + TETROMINOES[next_tetromino_type][fixed_rotation][i].x + fixed_x;
+        u16 y = GAME_AREA_UP + 2 + TETROMINOES[next_tetromino_type][fixed_rotation][i].y + fixed_y;
         VDP_drawText("O", x, y);
     }
 }
@@ -119,13 +122,20 @@ void drawNextTetromino()
 
 void drawSolidifiedTetrominoParts()
 {
-    clearGameArea();
-    for (int y = 0; y < GAME_GRID_Y - 1; y++)
+    for (u16 y = 0; y < GAME_GRID_Y - 1; y++)
     {
-        for (int x = 0; x < GAME_GRID_X; x++)
+        for (u16 x = 0; x < GAME_GRID_X; x++)
         {
-            if (solid_tetromino_parts[y][x] == 1)
+            if (solid_tetromino_parts[y][x] == 1 && drawn_solid_tetromino_parts[y][x] != 1)
+            {
                 VDP_drawText("0", x + GAME_AREA.left + 1, y + GAME_AREA.up + 1);
+                drawn_solid_tetromino_parts[y][x] = 1;
+            }
+            else if (solid_tetromino_parts[y][x] == 0 && drawn_solid_tetromino_parts[y][x] == 1)
+            {
+                drawn_solid_tetromino_parts[y][x] = 0;
+                VDP_clearText(x + GAME_AREA.left + 1, y + GAME_AREA.up + 1, 1);
+            }
         }
     }
 }
@@ -134,11 +144,6 @@ void clearGameScreen()
 {
     VDP_clearTextArea(0, 0, MAX_X, MAX_Y);
     VDP_clearTextAreaBG(BG_B, 0, 0, MAX_X, MAX_Y);
-}
-
-void clearGameArea()
-{
-    VDP_clearTextArea(GAME_AREA.left + 1, GAME_AREA.up + 1, GAME_AREA.right - GAME_AREA.left - 1, GAME_AREA.down - GAME_AREA.up - 1);
 }
 
 void clearTetrominoLastPosition()

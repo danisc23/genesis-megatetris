@@ -22,7 +22,7 @@ extern int hold_x_dir;
 extern int hold_y_dir;
 
 // Main Menu
-extern char options[4][20];
+extern char options[5][20];
 extern bool draw_next_tetromino;
 
 // Current Game
@@ -32,6 +32,7 @@ extern int level;
 extern int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
 
 // Game Logic
+void fillGrid();
 void prepareNewGame();
 void restartMoveDownTimer();
 void moveDown();
@@ -43,6 +44,6 @@ void rotateTetromino(int direction);
 
 int updateGameStateOnCondition(int condition, enum GAME_STATE);
 int updateSelectedOption(int direction);
-void triggerSelectedOptionOnCondition(int condition);
+void triggerSelectedOption(int button_pressed, int direction);
 
 #endif // __FUNCTIONS_H
