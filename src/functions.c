@@ -43,6 +43,16 @@ int score = 0;
 int level = 1;
 int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
 
+static void addScore(int points)
+{
+    score += points;
+    if (score > hiscore)
+        hiscore = score;
+    level = score / 1000 + starting_level;
+    level = level > 10 ? 10 : level;
+    drawUI();
+}
+
 static bool checkCollisionWithSolidTetrominoParts(int pos_x, int pos_y)
 {
     for (int i = 0; i < 4; i++)
@@ -114,10 +124,7 @@ static void clearCompletedLines()
         return;
 
     XGM_startPlayPCM(SFX_ID_CLEAR_LINE, 1, SOUND_PCM_CH2);
-    score += (lines_cleared * lines_cleared) * 100;
-    level = score / 1000 + starting_level;
-    level = level > 10 ? 10 : level;
-    drawUI();
+    addScore((lines_cleared * lines_cleared) * 100);
 }
 
 static void setTetromino(int tetromino_type, int rotation, Position *tetromino)
@@ -181,6 +188,9 @@ void moveDown()
     if (tick < drop_speed)
         return;
 
+    if (hold_y_dir)
+        addScore(1);
+
     restartMoveDownTimer();
     moveTetromino(0, 1, !hold_y_dir);
 }
@@ -191,6 +201,7 @@ void dropDown()
     while (!checkBottomCollision(current_x, y_dir + current_y + 1))
         y_dir++;
     freezed_tick = DROP_SPEED; // ensure solidifyTetromino() is called next frame
+    addScore(y_dir);
     moveTetromino(0, y_dir, TRUE);
 }
 
