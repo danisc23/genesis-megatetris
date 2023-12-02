@@ -20,7 +20,6 @@ void stateMenu()
     drawMainMenu();
     while (game_state == GAME_STATE_MENU)
         SYS_doVBlankProcess();
-
     prepareNewGame();
 }
 
@@ -30,9 +29,8 @@ void statePlaying()
     JOY_setEventHandler(joyPlaying);
     drawGameArea();
     drawUI();
-    drawSolidifiedTetrominoParts();
+    drawSolidifiedTetrominoParts(1);
     drawNextTetromino();
-    fillGrid();
     startTimer(DROP_DOWN_TIMER);
     while (game_state == GAME_STATE_PLAYING)
     {

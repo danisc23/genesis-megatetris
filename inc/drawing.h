@@ -10,7 +10,7 @@ void drawUI();
 void drawGameArea();
 void drawCurrentTetromino();
 void drawNextTetromino();
-void drawSolidifiedTetrominoParts();
+void drawSolidifiedTetrominoParts(int force_redraw);
 void clearGameScreen();
 void clearTetrominoLastPosition();
 
