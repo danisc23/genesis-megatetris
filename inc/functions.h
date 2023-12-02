@@ -22,8 +22,9 @@ extern int hold_x_dir;
 extern int hold_y_dir;
 
 // Main Menu
-extern char options[4][20];
+extern char options[6][22];
 extern bool draw_next_tetromino;
+extern bool draw_ghost_tetromino;
 
 // Current Game
 extern int freezed_tick; // Used to track elapsed time when game is paused
@@ -40,9 +41,10 @@ void startMoveSideTimer(int x_dir);
 void moveSide();
 void moveTetromino(int x, int y, bool silent);
 void rotateTetromino(int direction);
+bool checkBottomCollision(int pos_x, int pos_y);
 
 int updateGameStateOnCondition(int condition, enum GAME_STATE);
 int updateSelectedOption(int direction);
-void triggerSelectedOptionOnCondition(int condition);
+void triggerSelectedOption(int button_pressed, int direction);
 
 #endif // __FUNCTIONS_H

@@ -17,12 +17,17 @@ void joyMainMenu(u16 joy, u16 changed, u16 state)
     int a_pressed = state & changed & BUTTON_A;
     int b_pressed = state & changed & BUTTON_B;
     int c_pressed = state & changed & BUTTON_C;
+    int left_pressed = state & changed & BUTTON_LEFT;
+    int right_pressed = state & changed & BUTTON_RIGHT;
 
+    int direction = sign(right_pressed || a_pressed || c_pressed) - sign(left_pressed || b_pressed);
+    int button = sign(start_pressed || a_pressed || b_pressed || c_pressed);
     int pointer_dir = down - up;
+
     if (pointer_dir)
         drawMainMenuPointer(updateSelectedOption(pointer_dir));
-
-    triggerSelectedOptionOnCondition(start_pressed || a_pressed || b_pressed || c_pressed);
+    else if (direction || button)
+        triggerSelectedOption(button, direction);
 }
 
 void joyPlaying(u16 joy, u16 changed, u16 state)

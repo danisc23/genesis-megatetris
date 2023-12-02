@@ -20,7 +20,6 @@ void stateMenu()
     drawMainMenu();
     while (game_state == GAME_STATE_MENU)
         SYS_doVBlankProcess();
-
     prepareNewGame();
 }
 
@@ -30,7 +29,7 @@ void statePlaying()
     JOY_setEventHandler(joyPlaying);
     drawGameArea();
     drawUI();
-    drawSolidifiedTetrominoParts();
+    drawSolidifiedTetrominoParts(1);
     drawNextTetromino();
     startTimer(DROP_DOWN_TIMER);
     while (game_state == GAME_STATE_PLAYING)
@@ -57,12 +56,12 @@ void statePause()
 
 void stateGameOver()
 {
-    prepareNextState();
     JOY_setEventHandler(joyGameOverMenu);
     hiscore = score > hiscore ? score : hiscore;
     drawUI();
-    VDP_drawText("GAME OVER", 15, 10);
-    VDP_drawText("PRESS START", 14, 20);
+    VDP_drawText("          ", 16, 12);
+    VDP_drawText("GAME  OVER", 16, 13);
+    VDP_drawText("          ", 16, 14);
     while (game_state == GAME_STATE_GAME_OVER)
         SYS_doVBlankProcess();
 }

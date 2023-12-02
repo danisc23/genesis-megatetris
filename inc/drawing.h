@@ -1,7 +1,7 @@
 #ifndef __DRAWING_H
 #define __DRAWING_H
 
-#define OPTIONS_Y_OFFSET 17
+#define OPTIONS_Y_OFFSET 16
 
 void drawMainMenuPointer(int selected_option);
 void drawMainMenu();
@@ -10,9 +10,8 @@ void drawUI();
 void drawGameArea();
 void drawCurrentTetromino();
 void drawNextTetromino();
-void drawSolidifiedTetrominoParts();
+void drawSolidifiedTetrominoParts(int force_redraw);
 void clearGameScreen();
-void clearGameArea();
 void clearTetrominoLastPosition();
 
 #endif // __DRAWING_H

@@ -26,8 +26,16 @@ int hold_y_dir;
 // Main Menu
 static int selected_option = 0;
 static int starting_level = 1;
+static int floor_level = 0;
 bool draw_next_tetromino = 1;
-char options[4][20] = {"Start Game", "Show Next: YES", "Level: 1", "Reset Hi-Score"};
+bool draw_ghost_tetromino = 0;
+char options[6][22] = {
+    "Start Game",
+    "Level: 1",
+    "Lines: 0",
+    "See Next: YES",
+    "Ghost Hint: NO",
+    "Reset Hi-score"};
 
 // Current Game
 int freezed_tick = 0; // Used to track elapsed time when game is paused
@@ -52,7 +60,7 @@ static bool checkCollisionWithSolidTetrominoParts(int pos_x, int pos_y)
     return FALSE;
 }
 
-static bool checkBottomCollision(int pos_x, int pos_y)
+bool checkBottomCollision(int pos_x, int pos_y)
 {
     for (int i = 0; i < 4; i++)
     {
@@ -135,6 +143,19 @@ static void spawnTetromino()
     current_x = GAME_AREA_LEFT + (GAME_GRID_X / 2);
     current_y = GAME_AREA_UP + 1;
     drawNextTetromino();
+    updateGameStateOnCondition(checkCollisionWithSolidTetrominoParts(current_x, current_y), GAME_STATE_GAME_OVER);
+}
+
+static void fillGrid()
+{
+    for (int i = GAME_GRID_Y - 1; i >= 0; i--)
+    {
+        if (i < GAME_GRID_Y - 1 - floor_level)
+            break;
+        for (int j = 0; j < GAME_GRID_X; j++)
+            solid_tetromino_parts[i][j] = random() % 2;
+    }
+    drawSolidifiedTetrominoParts(0);
 }
 
 void prepareNewGame()
@@ -142,6 +163,7 @@ void prepareNewGame()
     memset(solid_tetromino_parts, 0, sizeof(solid_tetromino_parts));
     score = 0;
     level = starting_level;
+    fillGrid();
     spawnTetromino();
 }
 
@@ -200,7 +222,7 @@ static void solidifyTetromino()
         int y = current_y + current_tetromino[i].y;
         x -= GAME_AREA.left + 1;
         y -= GAME_AREA.up + 1;
-        if (updateGameStateOnCondition(y <= 0, GAME_STATE_GAME_OVER))
+        if (updateGameStateOnCondition(y < 0, GAME_STATE_GAME_OVER))
             break;
 
         solid_tetromino_parts[y][x] = 1;
@@ -228,8 +250,8 @@ void moveTetromino(int x, int y, bool silent)
     {
         solidifyTetromino();
         clearCompletedLines();
+        drawSolidifiedTetrominoParts(0);
         spawnTetromino();
-        drawSolidifiedTetrominoParts();
     }
 }
 
@@ -264,10 +286,11 @@ int updateSelectedOption(int direction)
 {
     if (direction)
     {
+        int max_option = sizeof(options) / sizeof(options[0]) - 1;
         XGM_startPlayPCM(SFX_ID_MOVE, 1, SOUND_PCM_CH2);
         selected_option += direction;
-        selected_option = selected_option < 0 ? 3 : selected_option;
-        selected_option = selected_option > 3 ? 0 : selected_option;
+        selected_option = selected_option < 0 ? max_option : selected_option;
+        selected_option = selected_option > max_option ? 0 : selected_option;
     }
     return selected_option;
 }
@@ -280,33 +303,40 @@ int updateGameStateOnCondition(int change, enum GAME_STATE state)
     return change;
 }
 
-void triggerSelectedOptionOnCondition(int condition)
+void triggerSelectedOption(int button_pressed, int direction)
 {
-    // TODO: This changes game variables and draws to the screen
-    // that belong to different domains (game and drawing) :thinking:
-    if (!condition)
-        return;
-
     XGM_startPlayPCM(SFX_ID_MOVE, 1, SOUND_PCM_CH2);
 
-    if (selected_option == 0)
-        updateGameStateOnCondition(condition, GAME_STATE_PLAYING);
-    else if (selected_option == 1)
+    switch (selected_option)
     {
+    case 0:
+        updateGameStateOnCondition(button_pressed, GAME_STATE_PLAYING);
+        break;
+    case 1:
+        starting_level = clamp(1, (direction ? direction : button_pressed) + starting_level, 10);
+        sprintf(options[1], "Level: %d ", starting_level);
+        drawMainMenu();
+        break;
+    case 2:
+        floor_level = clamp(0, (direction ? direction : button_pressed) + floor_level, 10);
+        sprintf(options[2], "Lines: %d ", floor_level);
+        drawMainMenu();
+        break;
+    case 3:
         draw_next_tetromino = !draw_next_tetromino;
-        sprintf(options[1], "Show Next: %s", draw_next_tetromino ? "YES" : "NO ");
-        VDP_drawText(options[1], 14, 18);
-    }
-    else if (selected_option == 2)
-    {
-        starting_level++;
-        starting_level = starting_level > 10 ? 1 : starting_level;
-        sprintf(options[2], "Level: %d ", starting_level);
-        VDP_drawText(options[2], 14, 19);
-    }
-    else if (selected_option == 3)
-    {
+        sprintf(options[3], "See Next: %s", draw_next_tetromino ? "YES" : "NO ");
+        drawMainMenu();
+        break;
+    case 4:
+        draw_ghost_tetromino = !draw_ghost_tetromino;
+        sprintf(options[4], "Ghost Hint: %s", draw_ghost_tetromino ? "YES" : "NO ");
+        drawMainMenu();
+        break;
+    case 5:
+        if (!button_pressed)
+            break;
         hiscore = 0;
         drawMainMenuFooter();
+        break;
     }
 }
