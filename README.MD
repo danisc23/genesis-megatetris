@@ -6,6 +6,10 @@ This is a text-character-based Tetris clone developed using SGDK, for Genesis/Me
 
 ## How to Play
 
+1. Play it online at [danisc23.itch.io/genesis-megatetris](https://danisc23.itch.io/genesis-megatetris).
+
+or
+
 1. Download the rom from [out/rom.bin](out/rom.bin).
 2. Open the game in a compatible Megadrive emulator such as Kgens.
 
