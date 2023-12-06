@@ -212,10 +212,21 @@ void restartMoveDownTimer()
     freezed_tick = 0;
 }
 
+static u8 getFramesPerRow()
+{
+    // GB~ Speed curve
+    if (level <= 5)
+        return 56 - (level * 4);
+    else if (level <= 9)
+        return 28 - ((level - 6) * 5);
+    else
+        return max(10 - ((level - 10) * 0.7), MIN_FRAMES_PRE_ROW);
+}
+
 void moveDown()
 {
-    int tick = (getTimer(DROP_DOWN_TIMER, 0) + freezed_tick);
-    int drop_speed = DROP_SPEED - (level * DROP_LEVEL_MODIFIER);
+    u32 tick = (getTimer(DROP_DOWN_TIMER, 0) + freezed_tick);
+    u32 drop_speed = TICKS_PER_FRAME * getFramesPerRow();
     drop_speed = hold_y_dir ? min(drop_speed / 2, HOLD_MOVE_SPEED) : drop_speed;
     if (tick < drop_speed)
         return;
@@ -232,7 +243,7 @@ void dropDown()
     int y_dir = 0;
     while (!checkBottomCollision(current_x, y_dir + current_y + 1))
         y_dir++;
-    freezed_tick = DROP_SPEED; // ensure solidifyTetromino() is called next frame
+    freezed_tick = SUBTICKPERSECOND; // ensure solidifyTetromino() is called next frame
     addScore(y_dir);
     moveTetromino(0, y_dir, TRUE);
 }
