@@ -53,13 +53,17 @@ void drawUI()
 {
     char score_text[15];
     char level_text[10];
-    char hiscore_text[15];
+    char lines_text[15];
+    // char lines_for_next_level_text[15];
     sprintf(score_text, "Score: %d", score);
-    sprintf(hiscore_text, "Hi: %d", hiscore);
     sprintf(level_text, "Level: %d", level);
+    sprintf(lines_text, "Lines: %d", total_lines_cleared);
+    // sprintf(lines_for_next_level_text, "Next Lvl: %d ", lines_for_next_level);
     VDP_drawText(score_text, 1, 1);
     VDP_drawText(level_text, 1, 2);
-    VDP_drawText(hiscore_text, 1, 3);
+    VDP_drawText(lines_text, 1, 3);
+    // VDP_drawText(lines_for_next_level_text, 1, 5);
+    drawMainMenuFooter();
 }
 
 void drawGameArea()
