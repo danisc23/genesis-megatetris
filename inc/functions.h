@@ -6,7 +6,7 @@
 
 // Global Game
 extern enum GAME_STATE game_state;
-extern int hiscore;
+extern u32 hiscore;
 
 // Current Tetromino
 extern int current_x;
@@ -28,8 +28,10 @@ extern bool draw_ghost_tetromino;
 
 // Current Game
 extern int freezed_tick; // Used to track elapsed time when game is paused
-extern int score;
-extern int level;
+extern u32 score;
+extern u16 total_lines_cleared;
+extern s8 lines_for_next_level;
+extern u8 level;
 extern int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
 
 // Game Logic

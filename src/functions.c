@@ -5,7 +5,7 @@
 enum GAME_STATE game_state = GAME_STATE_MENU;
 
 // Global Game
-int hiscore = 0;
+u32 hiscore = 0;
 
 // Current Tetromino
 int current_x;
@@ -25,8 +25,8 @@ int hold_y_dir;
 
 // Main Menu
 static int selected_option = 0;
-static int starting_level = 1;
-static int floor_level = 0;
+static u8 starting_level = 1;
+static u8 floor_level = 0;
 bool draw_next_tetromino = 1;
 bool draw_ghost_tetromino = 0;
 char options[6][22] = {
@@ -39,9 +39,30 @@ char options[6][22] = {
 
 // Current Game
 int freezed_tick = 0; // Used to track elapsed time when game is paused
-int score = 0;
-int level = 1;
+u32 score = 0;
+u16 total_lines_cleared = 0;
+s8 lines_for_next_level = 0;
+u8 level = 1;
 int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+
+static void addScore(u16 points)
+{
+    score += points;
+    if (score > hiscore)
+        hiscore = score;
+    drawUI();
+}
+
+static void addLinesCleared(u16 lines)
+{
+    total_lines_cleared += lines;
+    lines_for_next_level -= lines;
+    if (lines_for_next_level <= 0)
+    {
+        level++;
+        lines_for_next_level += level >= 10 ? 20 : 10;
+    }
+}
 
 static bool checkCollisionWithSolidTetrominoParts(int pos_x, int pos_y)
 {
@@ -86,6 +107,23 @@ static bool checkWallCollision(int new_x, int new_y)
     return checkCollisionWithSolidTetrominoParts(new_x, new_y);
 }
 
+static u16 getScoreByCompletedLines(int lines_cleared)
+{
+    switch (lines_cleared)
+    {
+    case 1:
+        return SCORE_1_LINE;
+    case 2:
+        return SCORE_2_LINES;
+    case 3:
+        return SCORE_3_LINES;
+    case 4:
+        return SCORE_TETRIS;
+    default:
+        return 0;
+    }
+}
+
 static void clearCompletedLines()
 {
     int new_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
@@ -114,10 +152,8 @@ static void clearCompletedLines()
         return;
 
     XGM_startPlayPCM(SFX_ID_CLEAR_LINE, 1, SOUND_PCM_CH2);
-    score += (lines_cleared * lines_cleared) * 100;
-    level = score / 1000 + starting_level;
-    level = level > 10 ? 10 : level;
-    drawUI();
+    addLinesCleared(lines_cleared);
+    addScore(getScoreByCompletedLines(lines_cleared) * level);
 }
 
 static void setTetromino(int tetromino_type, int rotation, Position *tetromino)
@@ -162,7 +198,10 @@ void prepareNewGame()
 {
     memset(solid_tetromino_parts, 0, sizeof(solid_tetromino_parts));
     score = 0;
-    level = starting_level;
+    level = starting_level - 1;
+    total_lines_cleared = 0;
+    lines_for_next_level = 0;
+    addLinesCleared(0);
     fillGrid();
     spawnTetromino();
 }
@@ -173,13 +212,27 @@ void restartMoveDownTimer()
     freezed_tick = 0;
 }
 
+static u8 getFramesPerRow()
+{
+    // GB~ Speed curve
+    if (level <= 5)
+        return 56 - (level * 4);
+    else if (level <= 9)
+        return 28 - ((level - 6) * 5);
+    else
+        return max(10 - ((level - 10) * 0.7), MIN_FRAMES_PER_ROW);
+}
+
 void moveDown()
 {
-    int tick = (getTimer(DROP_DOWN_TIMER, 0) + freezed_tick);
-    int drop_speed = DROP_SPEED - (level * DROP_LEVEL_MODIFIER);
+    u32 tick = (getTimer(DROP_DOWN_TIMER, 0) + freezed_tick);
+    u32 drop_speed = TICKS_PER_FRAME * getFramesPerRow();
     drop_speed = hold_y_dir ? min(drop_speed / 2, HOLD_MOVE_SPEED) : drop_speed;
     if (tick < drop_speed)
         return;
+
+    if (hold_y_dir)
+        addScore(SCORE_SOFT_DROP);
 
     restartMoveDownTimer();
     moveTetromino(0, 1, !hold_y_dir);
@@ -190,7 +243,8 @@ void dropDown()
     int y_dir = 0;
     while (!checkBottomCollision(current_x, y_dir + current_y + 1))
         y_dir++;
-    freezed_tick = DROP_SPEED; // ensure solidifyTetromino() is called next frame
+    freezed_tick = SUBTICKPERSECOND; // ensure solidifyTetromino() is called next frame
+    addScore(y_dir);
     moveTetromino(0, y_dir, TRUE);
 }
 

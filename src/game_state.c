@@ -57,8 +57,11 @@ void statePause()
 void stateGameOver()
 {
     JOY_setEventHandler(joyGameOverMenu);
-    hiscore = score > hiscore ? score : hiscore;
-    drawUI();
+    if (score > hiscore)
+    {
+        hiscore = score;
+        drawUI();
+    }
     VDP_drawText("          ", 16, 12);
     VDP_drawText("GAME  OVER", 16, 13);
     VDP_drawText("          ", 16, 14);
