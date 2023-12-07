@@ -60,7 +60,7 @@ static void addLinesCleared(u16 lines)
     if (lines_for_next_level <= 0)
     {
         level++;
-        lines_for_next_level += 10 + 5 * (level - 1);
+        lines_for_next_level += level >= 10 ? 20 : 10;
     }
 }
 
@@ -220,7 +220,7 @@ static u8 getFramesPerRow()
     else if (level <= 9)
         return 28 - ((level - 6) * 5);
     else
-        return max(10 - ((level - 10) * 0.7), MIN_FRAMES_PRE_ROW);
+        return max(10 - ((level - 10) * 0.7), MIN_FRAMES_PER_ROW);
 }
 
 void moveDown()
