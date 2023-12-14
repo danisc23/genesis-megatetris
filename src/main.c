@@ -13,6 +13,7 @@ static void initSound()
 
 int main()
 {
+  loadGameData();
   JOY_init();
   VDP_setScreenWidth320();
   initSound();

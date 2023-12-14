@@ -23,12 +23,15 @@ static int first_hold;
 int hold_x_dir;
 int hold_y_dir;
 
+GameConfig game_config = {
+    .draw_next_tetromino = 1,
+    .draw_ghost_tetromino = 0,
+    .starting_level = 1,
+    .floor_level = 0,
+    .shift_grid = 0};
+
 // Main Menu
 static int selected_option = 0;
-static u8 starting_level = 1;
-static u8 floor_level = 0;
-bool draw_next_tetromino = 1;
-bool draw_ghost_tetromino = 0;
 char options[6][22] = {
     "Start Game",
     "Level: 1",
@@ -44,6 +47,28 @@ u16 total_lines_cleared = 0;
 s8 lines_for_next_level = 0;
 u8 level = 1;
 int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+
+void saveGameData()
+{
+    // int offset = SRAM_BASE;
+    SRAM_enable();
+    SRAM_writeLong(1, hiscore);
+    SRAM_disable();
+}
+
+void loadGameData()
+{
+    // int offset = SRAM_BASE;
+    SRAM_enableRO();
+    hiscore = SRAM_readLong(1);
+    SRAM_disable();
+}
+
+static void resetGameData()
+{
+    hiscore = 0;
+    saveGameData();
+}
 
 static void addScore(u16 points)
 {
@@ -186,7 +211,7 @@ static void fillGrid()
 {
     for (int i = GAME_GRID_Y - 1; i >= 0; i--)
     {
-        if (i < GAME_GRID_Y - 1 - floor_level)
+        if (i < GAME_GRID_Y - 1 - game_config.floor_level)
             break;
         for (int j = 0; j < GAME_GRID_X; j++)
             solid_tetromino_parts[i][j] = random() % 2;
@@ -198,7 +223,7 @@ void prepareNewGame()
 {
     memset(solid_tetromino_parts, 0, sizeof(solid_tetromino_parts));
     score = 0;
-    level = starting_level - 1;
+    level = game_config.starting_level - 1;
     total_lines_cleared = 0;
     lines_for_next_level = 0;
     addLinesCleared(0);
@@ -267,6 +292,18 @@ void moveSide()
     startTimer(HOLD_TIMER);
 }
 
+// static void shiftSolidifiedTetrominoParts()
+// {
+//     // Move the grid elements one position to the right, the overflowing elements will be moved to first position
+//     for (int i = 0; i < GAME_GRID_Y; i++)
+//     {
+// //         int temp = solid_tetromino_parts[i][GAME_GRID_X - 1];
+//         for (int j = GAME_GRID_X - 1; j > 0; j--)
+//             solid_tetromino_parts[i][j] = solid_tetromino_parts[i][j - 1];
+//         solid_tetromino_parts[i][0] = temp;
+//     }
+// }
+
 static void solidifyTetromino()
 {
     XGM_startPlayPCM(SFX_ID_SOLIDIFY, 1, SOUND_PCM_CH3);
@@ -281,6 +318,7 @@ static void solidifyTetromino()
 
         solid_tetromino_parts[y][x] = 1;
     }
+    // shiftSolidifiedTetrominoParts();
 }
 
 void moveTetromino(int x, int y, bool silent)
@@ -367,29 +405,29 @@ void triggerSelectedOption(int button_pressed, int direction)
         updateGameStateOnCondition(button_pressed, GAME_STATE_PLAYING);
         break;
     case 1:
-        starting_level = clamp(1, (direction ? direction : button_pressed) + starting_level, 10);
-        sprintf(options[1], "Level: %d ", starting_level);
+        game_config.starting_level = clamp(1, (direction ? direction : button_pressed) + game_config.starting_level, 10);
+        sprintf(options[1], "Level: %d ", game_config.starting_level);
         drawMainMenu();
         break;
     case 2:
-        floor_level = clamp(0, (direction ? direction : button_pressed) + floor_level, 10);
-        sprintf(options[2], "Lines: %d ", floor_level);
+        game_config.floor_level = clamp(0, (direction ? direction : button_pressed) + game_config.floor_level, 10);
+        sprintf(options[2], "Lines: %d ", game_config.floor_level);
         drawMainMenu();
         break;
     case 3:
-        draw_next_tetromino = !draw_next_tetromino;
-        sprintf(options[3], "See Next: %s", draw_next_tetromino ? "YES" : "NO ");
+        game_config.draw_next_tetromino = !game_config.draw_next_tetromino;
+        sprintf(options[3], "See Next: %s", game_config.draw_next_tetromino ? "YES" : "NO ");
         drawMainMenu();
         break;
     case 4:
-        draw_ghost_tetromino = !draw_ghost_tetromino;
-        sprintf(options[4], "Ghost Hint: %s", draw_ghost_tetromino ? "YES" : "NO ");
+        game_config.draw_ghost_tetromino = !game_config.draw_ghost_tetromino;
+        sprintf(options[4], "Ghost Hint: %s", game_config.draw_ghost_tetromino ? "YES" : "NO ");
         drawMainMenu();
         break;
     case 5:
         if (!button_pressed)
             break;
-        hiscore = 0;
+        resetGameData();
         drawMainMenuFooter();
         break;
     }

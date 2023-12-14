@@ -62,6 +62,7 @@ void stateGameOver()
         hiscore = score;
         drawUI();
     }
+    saveGameData();
     VDP_drawText("          ", 16, 12);
     VDP_drawText("GAME  OVER", 16, 13);
     VDP_drawText("          ", 16, 14);

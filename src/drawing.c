@@ -27,7 +27,7 @@ static void drawMainMenuOptions()
 void drawMainMenuFooter()
 {
     char hiscore_text[20];
-    sprintf(hiscore_text, "Hi: %d     ", hiscore);
+    sprintf(hiscore_text, "Hi: %ld     ", hiscore);
     VDP_drawText(hiscore_text, 1, MAX_Y - 3);
 
     VDP_drawText("danisc23", MAX_X - 9, MAX_Y - 3);
@@ -54,7 +54,7 @@ void drawUI()
     char score_text[15];
     char level_text[10];
     char lines_text[15];
-    sprintf(score_text, "Score: %d", score);
+    sprintf(score_text, "Score: %ld", score);
     sprintf(level_text, "Level: %d", level);
     sprintf(lines_text, "Lines: %d", total_lines_cleared);
     VDP_drawText(score_text, 1, 1);
@@ -99,7 +99,7 @@ static void drawGhostTetromino()
 
 void drawCurrentTetromino()
 {
-    if (draw_ghost_tetromino)
+    if (game_config.draw_ghost_tetromino)
         drawGhostTetromino();
     for (int i = 0; i < 4; i++)
     {
@@ -137,7 +137,7 @@ static void drawNextTetrominoContent()
 
 void drawNextTetromino()
 {
-    if (!draw_next_tetromino)
+    if (!game_config.draw_next_tetromino)
         return;
 
     drawNextTetrominoArea();
