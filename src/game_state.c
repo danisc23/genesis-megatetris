@@ -20,11 +20,11 @@ void stateMenu()
     drawMainMenu();
     while (game_state == GAME_STATE_MENU)
         SYS_doVBlankProcess();
-    prepareNewGame();
 }
 
 void statePlaying()
 {
+    prepareNewGame();
     prepareNextState();
     JOY_setEventHandler(joyPlaying);
     drawGameArea();

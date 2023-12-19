@@ -48,19 +48,36 @@ s8 lines_for_next_level = 0;
 u8 level = 1;
 int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
 
+static u8 SRAM_HIGHSCORE_OFFSET = 0x00;
+static u8 SRAM_CHECKSUM_OFFSET = 0x33;
+static u8 SRAM_CHECKSUM_VALUE = 69;
+
+static void initSRAM()
+{
+    SRAM_enableRO();
+    u8 test_value = SRAM_readByte(SRAM_CHECKSUM_OFFSET);
+    SRAM_disable();
+    if (test_value != SRAM_CHECKSUM_VALUE)
+    {
+        SRAM_enable();
+        SRAM_writeByte(SRAM_CHECKSUM_OFFSET, SRAM_CHECKSUM_VALUE);
+        SRAM_writeLong(SRAM_HIGHSCORE_OFFSET, 0);
+        SRAM_disable();
+    }
+}
+
 void saveGameData()
 {
-    // int offset = SRAM_BASE;
     SRAM_enable();
-    SRAM_writeLong(1, hiscore);
+    SRAM_writeLong(SRAM_HIGHSCORE_OFFSET, hiscore);
     SRAM_disable();
 }
 
 void loadGameData()
 {
-    // int offset = SRAM_BASE;
+    initSRAM();
     SRAM_enableRO();
-    hiscore = SRAM_readLong(1);
+    hiscore = SRAM_readLong(SRAM_HIGHSCORE_OFFSET);
     SRAM_disable();
 }
 
