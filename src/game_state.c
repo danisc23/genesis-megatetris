@@ -1,5 +1,6 @@
 #include "functions.h"
 #include "drawing.h"
+#include "options.h"
 #include "joy_handlers.h"
 #include "game_state.h"
 
@@ -20,11 +21,11 @@ void stateMenu()
     drawMainMenu();
     while (game_state == GAME_STATE_MENU)
         SYS_doVBlankProcess();
+    prepareNewGame();
 }
 
 void statePlaying()
 {
-    prepareNewGame();
     prepareNextState();
     JOY_setEventHandler(joyPlaying);
     drawGameArea();
@@ -52,6 +53,19 @@ void statePause()
     freezed_tick += getTimer(DROP_DOWN_TIMER, 0);
     while (game_state == GAME_STATE_PAUSED)
         SYS_doVBlankProcess();
+}
+
+void stateOptions()
+{
+    prepareNextState();
+    JOY_setEventHandler(joyOptions);
+    drawMainMenuTitle();
+    drawMainMenuFooter();
+    OPT_drawOptions();
+    OPT_moveOptionPointer(0);
+    while (game_state == GAME_STATE_OPTIONS)
+        SYS_doVBlankProcess();
+    saveGameData();
 }
 
 void stateGameOver()

@@ -3,6 +3,7 @@
 
 #define OPTIONS_Y_OFFSET 16
 
+void drawMainMenuTitle();
 void drawMainMenuPointer(int selected_option);
 void drawMainMenu();
 void drawMainMenuFooter();

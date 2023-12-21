@@ -1,6 +1,7 @@
 #include "typing.h"
 #include "functions.h"
 #include "drawing.h"
+#include "options.h"
 
 enum GAME_STATE game_state = GAME_STATE_MENU;
 
@@ -32,13 +33,13 @@ GameConfig game_config = {
 
 // Main Menu
 static int selected_option = 0;
-char options[6][22] = {
+char menu_options[6][22] = {
     "Start Game",
     "Level: 1",
     "Lines: 0",
     "See Next: YES",
     "Ghost Hint: NO",
-    "Reset Hi-score"};
+    "Options"};
 
 // Current Game
 int freezed_tick = 0; // Used to track elapsed time when game is paused
@@ -49,6 +50,7 @@ u8 level = 1;
 int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
 
 static u8 SRAM_HIGHSCORE_OFFSET = 0x00;
+static u8 SRAM_OPTIONS_OFFSET = 0x05;
 static u8 SRAM_CHECKSUM_OFFSET = 0x33;
 static u8 SRAM_CHECKSUM_VALUE = 69;
 
@@ -59,9 +61,13 @@ static void initSRAM()
     SRAM_disable();
     if (test_value != SRAM_CHECKSUM_VALUE)
     {
+        u8 optionsOffset = SRAM_OPTIONS_OFFSET;
         SRAM_enable();
         SRAM_writeByte(SRAM_CHECKSUM_OFFSET, SRAM_CHECKSUM_VALUE);
         SRAM_writeLong(SRAM_HIGHSCORE_OFFSET, 0);
+        SRAM_writeByte(optionsOffset++, options.color);
+        SRAM_writeByte(optionsOffset++, options.music);
+        SRAM_writeByte(optionsOffset++, options.controls);
         SRAM_disable();
     }
 }
@@ -70,6 +76,10 @@ void saveGameData()
 {
     SRAM_enable();
     SRAM_writeLong(SRAM_HIGHSCORE_OFFSET, hiscore);
+    u8 optionsOffset = SRAM_OPTIONS_OFFSET;
+    SRAM_writeByte(optionsOffset++, options.color);
+    SRAM_writeByte(optionsOffset++, options.music);
+    SRAM_writeByte(optionsOffset++, options.controls);
     SRAM_disable();
 }
 
@@ -78,13 +88,11 @@ void loadGameData()
     initSRAM();
     SRAM_enableRO();
     hiscore = SRAM_readLong(SRAM_HIGHSCORE_OFFSET);
+    u8 optionsOffset = SRAM_OPTIONS_OFFSET;
+    options.color = SRAM_readByte(optionsOffset++);
+    options.music = SRAM_readByte(optionsOffset++);
+    options.controls = SRAM_readByte(optionsOffset++);
     SRAM_disable();
-}
-
-static void resetGameData()
-{
-    hiscore = 0;
-    saveGameData();
 }
 
 static void addScore(u16 points)
@@ -395,7 +403,7 @@ int updateSelectedOption(int direction)
 {
     if (direction)
     {
-        int max_option = sizeof(options) / sizeof(options[0]) - 1;
+        int max_option = sizeof(menu_options) / sizeof(menu_options[0]) - 1;
         XGM_startPlayPCM(SFX_ID_MOVE, 1, SOUND_PCM_CH2);
         selected_option += direction;
         selected_option = selected_option < 0 ? max_option : selected_option;
@@ -423,29 +431,28 @@ void triggerSelectedOption(int button_pressed, int direction)
         break;
     case 1:
         game_config.starting_level = clamp(1, (direction ? direction : button_pressed) + game_config.starting_level, 10);
-        sprintf(options[1], "Level: %d ", game_config.starting_level);
+        sprintf(menu_options[1], "Level: %d ", game_config.starting_level);
         drawMainMenu();
         break;
     case 2:
         game_config.floor_level = clamp(0, (direction ? direction : button_pressed) + game_config.floor_level, 10);
-        sprintf(options[2], "Lines: %d ", game_config.floor_level);
+        sprintf(menu_options[2], "Lines: %d ", game_config.floor_level);
         drawMainMenu();
         break;
     case 3:
         game_config.draw_next_tetromino = !game_config.draw_next_tetromino;
-        sprintf(options[3], "See Next: %s", game_config.draw_next_tetromino ? "YES" : "NO ");
+        sprintf(menu_options[3], "See Next: %s", game_config.draw_next_tetromino ? "YES" : "NO ");
         drawMainMenu();
         break;
     case 4:
         game_config.draw_ghost_tetromino = !game_config.draw_ghost_tetromino;
-        sprintf(options[4], "Ghost Hint: %s", game_config.draw_ghost_tetromino ? "YES" : "NO ");
+        sprintf(menu_options[4], "Ghost Hint: %s", game_config.draw_ghost_tetromino ? "YES" : "NO ");
         drawMainMenu();
         break;
     case 5:
         if (!button_pressed)
             break;
-        resetGameData();
-        drawMainMenuFooter();
+        updateGameStateOnCondition(TRUE, GAME_STATE_OPTIONS);
         break;
     }
 }
