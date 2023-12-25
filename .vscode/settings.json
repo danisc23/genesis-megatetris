@@ -13,6 +13,7 @@
         "types.h": "c",
         "game_state.h": "c",
         "typing.h": "c",
-        "drawing.h": "c"
+        "drawing.h": "c",
+        "options.h": "c"
     }
 }

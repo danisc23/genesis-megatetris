@@ -1,6 +1,7 @@
 #include "typing.h"
 #include "functions.h"
 #include "drawing.h"
+#include "options.h"
 
 enum GAME_STATE game_state = GAME_STATE_MENU;
 
@@ -23,19 +24,22 @@ static int first_hold;
 int hold_x_dir;
 int hold_y_dir;
 
+GameConfig game_config = {
+    .draw_next_tetromino = 1,
+    .draw_ghost_tetromino = 0,
+    .starting_level = 1,
+    .floor_level = 0,
+    .shift_grid = 0};
+
 // Main Menu
 static int selected_option = 0;
-static u8 starting_level = 1;
-static u8 floor_level = 0;
-bool draw_next_tetromino = 1;
-bool draw_ghost_tetromino = 0;
-char options[6][22] = {
+char menu_options[6][22] = {
     "Start Game",
     "Level: 1",
     "Lines: 0",
     "See Next: YES",
     "Ghost Hint: NO",
-    "Reset Hi-score"};
+    "Options"};
 
 // Current Game
 int freezed_tick = 0; // Used to track elapsed time when game is paused
@@ -44,6 +48,52 @@ u16 total_lines_cleared = 0;
 s8 lines_for_next_level = 0;
 u8 level = 1;
 int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+
+static u8 SRAM_HIGHSCORE_OFFSET = 0x00;
+static u8 SRAM_OPTIONS_OFFSET = 0x05;
+static u8 SRAM_CHECKSUM_OFFSET = 0x33;
+static u8 SRAM_CHECKSUM_VALUE = 69;
+
+static void initSRAM()
+{
+    SRAM_enableRO();
+    u8 test_value = SRAM_readByte(SRAM_CHECKSUM_OFFSET);
+    SRAM_disable();
+    if (test_value != SRAM_CHECKSUM_VALUE)
+    {
+        u8 optionsOffset = SRAM_OPTIONS_OFFSET;
+        SRAM_enable();
+        SRAM_writeByte(SRAM_CHECKSUM_OFFSET, SRAM_CHECKSUM_VALUE);
+        SRAM_writeLong(SRAM_HIGHSCORE_OFFSET, 0);
+        SRAM_writeByte(optionsOffset++, options.color);
+        SRAM_writeByte(optionsOffset++, options.music);
+        SRAM_writeByte(optionsOffset++, options.controls);
+        SRAM_disable();
+    }
+}
+
+void saveGameData()
+{
+    SRAM_enable();
+    SRAM_writeLong(SRAM_HIGHSCORE_OFFSET, hiscore);
+    u8 optionsOffset = SRAM_OPTIONS_OFFSET;
+    SRAM_writeByte(optionsOffset++, options.color);
+    SRAM_writeByte(optionsOffset++, options.music);
+    SRAM_writeByte(optionsOffset++, options.controls);
+    SRAM_disable();
+}
+
+void loadGameData()
+{
+    initSRAM();
+    SRAM_enableRO();
+    hiscore = SRAM_readLong(SRAM_HIGHSCORE_OFFSET);
+    u8 optionsOffset = SRAM_OPTIONS_OFFSET;
+    options.color = SRAM_readByte(optionsOffset++);
+    options.music = SRAM_readByte(optionsOffset++);
+    options.controls = SRAM_readByte(optionsOffset++);
+    SRAM_disable();
+}
 
 static void addScore(u16 points)
 {
@@ -186,7 +236,7 @@ static void fillGrid()
 {
     for (int i = GAME_GRID_Y - 1; i >= 0; i--)
     {
-        if (i < GAME_GRID_Y - 1 - floor_level)
+        if (i < GAME_GRID_Y - 1 - game_config.floor_level)
             break;
         for (int j = 0; j < GAME_GRID_X; j++)
             solid_tetromino_parts[i][j] = random() % 2;
@@ -198,7 +248,7 @@ void prepareNewGame()
 {
     memset(solid_tetromino_parts, 0, sizeof(solid_tetromino_parts));
     score = 0;
-    level = starting_level - 1;
+    level = game_config.starting_level - 1;
     total_lines_cleared = 0;
     lines_for_next_level = 0;
     addLinesCleared(0);
@@ -267,6 +317,18 @@ void moveSide()
     startTimer(HOLD_TIMER);
 }
 
+// static void shiftSolidifiedTetrominoParts()
+// {
+//     // Move the grid elements one position to the right, the overflowing elements will be moved to first position
+//     for (int i = 0; i < GAME_GRID_Y; i++)
+//     {
+// //         int temp = solid_tetromino_parts[i][GAME_GRID_X - 1];
+//         for (int j = GAME_GRID_X - 1; j > 0; j--)
+//             solid_tetromino_parts[i][j] = solid_tetromino_parts[i][j - 1];
+//         solid_tetromino_parts[i][0] = temp;
+//     }
+// }
+
 static void solidifyTetromino()
 {
     XGM_startPlayPCM(SFX_ID_SOLIDIFY, 1, SOUND_PCM_CH3);
@@ -281,6 +343,7 @@ static void solidifyTetromino()
 
         solid_tetromino_parts[y][x] = 1;
     }
+    // shiftSolidifiedTetrominoParts();
 }
 
 void moveTetromino(int x, int y, bool silent)
@@ -340,7 +403,7 @@ int updateSelectedOption(int direction)
 {
     if (direction)
     {
-        int max_option = sizeof(options) / sizeof(options[0]) - 1;
+        int max_option = sizeof(menu_options) / sizeof(menu_options[0]) - 1;
         XGM_startPlayPCM(SFX_ID_MOVE, 1, SOUND_PCM_CH2);
         selected_option += direction;
         selected_option = selected_option < 0 ? max_option : selected_option;
@@ -367,30 +430,29 @@ void triggerSelectedOption(int button_pressed, int direction)
         updateGameStateOnCondition(button_pressed, GAME_STATE_PLAYING);
         break;
     case 1:
-        starting_level = clamp(1, (direction ? direction : button_pressed) + starting_level, 10);
-        sprintf(options[1], "Level: %d ", starting_level);
+        game_config.starting_level = clamp(1, (direction ? direction : button_pressed) + game_config.starting_level, 10);
+        sprintf(menu_options[1], "Level: %d ", game_config.starting_level);
         drawMainMenu();
         break;
     case 2:
-        floor_level = clamp(0, (direction ? direction : button_pressed) + floor_level, 10);
-        sprintf(options[2], "Lines: %d ", floor_level);
+        game_config.floor_level = clamp(0, (direction ? direction : button_pressed) + game_config.floor_level, 10);
+        sprintf(menu_options[2], "Lines: %d ", game_config.floor_level);
         drawMainMenu();
         break;
     case 3:
-        draw_next_tetromino = !draw_next_tetromino;
-        sprintf(options[3], "See Next: %s", draw_next_tetromino ? "YES" : "NO ");
+        game_config.draw_next_tetromino = !game_config.draw_next_tetromino;
+        sprintf(menu_options[3], "See Next: %s", game_config.draw_next_tetromino ? "YES" : "NO ");
         drawMainMenu();
         break;
     case 4:
-        draw_ghost_tetromino = !draw_ghost_tetromino;
-        sprintf(options[4], "Ghost Hint: %s", draw_ghost_tetromino ? "YES" : "NO ");
+        game_config.draw_ghost_tetromino = !game_config.draw_ghost_tetromino;
+        sprintf(menu_options[4], "Ghost Hint: %s", game_config.draw_ghost_tetromino ? "YES" : "NO ");
         drawMainMenu();
         break;
     case 5:
         if (!button_pressed)
             break;
-        hiscore = 0;
-        drawMainMenuFooter();
+        updateGameStateOnCondition(TRUE, GAME_STATE_OPTIONS);
         break;
     }
 }

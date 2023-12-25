@@ -22,9 +22,8 @@ extern int hold_x_dir;
 extern int hold_y_dir;
 
 // Main Menu
-extern char options[6][22];
-extern bool draw_next_tetromino;
-extern bool draw_ghost_tetromino;
+extern char menu_options[6][22];
+extern GameConfig game_config;
 
 // Current Game
 extern int freezed_tick; // Used to track elapsed time when game is paused
@@ -33,6 +32,9 @@ extern u16 total_lines_cleared;
 extern s8 lines_for_next_level;
 extern u8 level;
 extern int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+
+void loadGameData();
+void saveGameData();
 
 // Game Logic
 void prepareNewGame();

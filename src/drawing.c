@@ -6,28 +6,28 @@ static int last_drawn_pointer = OPTIONS_Y_OFFSET;
 // Used to reduce flickering on redraws
 static int drawn_solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
 
-static void drawMainMenuTitle()
+void drawMainMenuTitle()
 {
-    VDP_drawText(TITLE_1, 0, 2);
-    VDP_drawText(TITLE_2, 0, 3);
-    VDP_drawText(TITLE_3, 0, 4);
-    VDP_drawText(TITLE_4, 0, 5);
-    VDP_drawText(TITLE_5, 0, 6);
-    VDP_drawText(SEPARATOR, 0, 8);
-    VDP_drawText(SUBTITLE, 0, 10);
+    VDP_drawText(TITLE_1, 0, 1);
+    VDP_drawText(TITLE_2, 0, 2);
+    VDP_drawText(TITLE_3, 0, 3);
+    VDP_drawText(TITLE_4, 0, 4);
+    VDP_drawText(TITLE_5, 0, 5);
+    VDP_drawText(SEPARATOR, 0, 7);
+    VDP_drawText(SUBTITLE, 0, 9);
 }
 
 static void drawMainMenuOptions()
 {
-    int max_options = sizeof(options) / sizeof(options[0]);
+    int max_options = sizeof(menu_options) / sizeof(menu_options[0]);
     for (u8 i = 0; i < max_options; i++)
-        VDP_drawText(options[i], 14, OPTIONS_Y_OFFSET + i);
+        VDP_drawText(menu_options[i], 14, OPTIONS_Y_OFFSET + i);
 }
 
 void drawMainMenuFooter()
 {
-    char hiscore_text[20];
-    sprintf(hiscore_text, "Hi: %d     ", hiscore);
+    char hiscore_text[30];
+    sprintf(hiscore_text, "Hi: %ld            ", hiscore);
     VDP_drawText(hiscore_text, 1, MAX_Y - 3);
 
     VDP_drawText("danisc23", MAX_X - 9, MAX_Y - 3);
@@ -54,7 +54,7 @@ void drawUI()
     char score_text[15];
     char level_text[10];
     char lines_text[15];
-    sprintf(score_text, "Score: %d", score);
+    sprintf(score_text, "Score: %ld", score);
     sprintf(level_text, "Level: %d", level);
     sprintf(lines_text, "Lines: %d", total_lines_cleared);
     VDP_drawText(score_text, 1, 1);
@@ -99,7 +99,7 @@ static void drawGhostTetromino()
 
 void drawCurrentTetromino()
 {
-    if (draw_ghost_tetromino)
+    if (game_config.draw_ghost_tetromino)
         drawGhostTetromino();
     for (int i = 0; i < 4; i++)
     {
@@ -137,7 +137,7 @@ static void drawNextTetrominoContent()
 
 void drawNextTetromino()
 {
-    if (!draw_next_tetromino)
+    if (!game_config.draw_next_tetromino)
         return;
 
     drawNextTetrominoArea();

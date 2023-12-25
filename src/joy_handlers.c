@@ -1,6 +1,7 @@
 #include "functions.h"
 #include "drawing.h"
 #include "joy_handlers.h"
+#include "options.h"
 
 static int sign(int x)
 {
@@ -28,6 +29,37 @@ void joyMainMenu(u16 joy, u16 changed, u16 state)
         drawMainMenuPointer(updateSelectedOption(pointer_dir));
     else if (direction || button)
         triggerSelectedOption(button, direction);
+}
+
+void joyOptions(u16 joy, u16 changed, u16 state)
+{
+    if (joy != JOY_1 || !state)
+        return;
+    int start_pressed = state & changed & BUTTON_START;
+    int up = sign(state & changed & BUTTON_UP);
+    int down = sign(state & changed & BUTTON_DOWN);
+    int a_pressed = state & changed & BUTTON_A;
+    int b_pressed = state & changed & BUTTON_B;
+    int c_pressed = state & changed & BUTTON_C;
+    int left_pressed = state & changed & BUTTON_LEFT;
+    int right_pressed = state & changed & BUTTON_RIGHT;
+
+    int direction = sign(right_pressed) - sign(left_pressed);
+    int input = sign(start_pressed || a_pressed || b_pressed);
+    int quick_exit = sign(c_pressed);
+    int pointer_dir = down - up;
+
+    if (pointer_dir)
+        OPT_moveOptionPointer(pointer_dir);
+    else if (direction)
+        OPT_moveOptionValue(direction);
+    else if (input)
+        OPT_triggerOption();
+    else if (quick_exit)
+    {
+        saveGameData();
+        game_state = GAME_STATE_MENU;
+    }
 }
 
 void joyPlaying(u16 joy, u16 changed, u16 state)
@@ -64,7 +96,7 @@ void joyPlaying(u16 joy, u16 changed, u16 state)
     else if (up)
         dropDown();
 
-    rotateTetromino(rotation_dir);
+    rotateTetromino(rotation_dir * (options.controls ? -1 : 1));
     moveTetromino(x_dir, y_dir, FALSE);
 
     updateGameStateOnCondition(start_pressed, GAME_STATE_PAUSED);
