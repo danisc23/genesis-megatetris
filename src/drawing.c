@@ -31,7 +31,7 @@ void drawMainMenuFooter()
     VDP_drawText(hiscore_text, 1, MAX_Y - 3);
 
     VDP_drawText("danisc23", MAX_X - 9, MAX_Y - 3);
-    VDP_drawText(GAME_VERSION, MAX_X - 14, MAX_Y - 2);
+    VDP_drawText(GAME_VERSION, MAX_X - 19, MAX_Y - 2);
 }
 
 void drawMainMenuPointer(int selected_option)
