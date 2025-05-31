@@ -22,7 +22,7 @@ extern int hold_x_dir;
 extern int hold_y_dir;
 
 // Main Menu
-extern char menu_options[6][22];
+extern char menu_options[7][22];
 extern GameConfig game_config;
 
 // Current Game

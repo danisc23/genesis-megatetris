@@ -1,7 +1,7 @@
 #ifndef __CONSTANTS_H
 #define __CONSTANTS_H
 
-#define GAME_VERSION "v0.6.0 - 2023"
+#define GAME_VERSION "v0.6.1 - 2023-2025"
 
 #define SFX_ID_CLEAR_LINE 64
 #define SFX_ID_SOLIDIFY 65

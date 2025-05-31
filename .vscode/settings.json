@@ -1,10 +1,17 @@
 {
     "C_Cpp.default.includePath": [
-        "${env:GDK}\\inc",
-        "${env:GDK}\\res",
-        "res",
-        "inc"
+        "${env:GDK}/inc",
+        "${env:GDK}/res",
+        "${workspaceFolder}/res",
+        "${workspaceFolder}/inc"
     ],
+    "C_Cpp.default.defines": [
+        "__GENESIS__",
+        "__SGDK__"
+    ],
+    "C_Cpp.default.compilerPath": "${env:GDK}/bin/gcc.exe",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.intelliSenseMode": "gcc-x64",
     "files.associations": {
         "genesis.h": "c",
         "minunit.h": "c",
@@ -14,6 +21,13 @@
         "game_state.h": "c",
         "typing.h": "c",
         "drawing.h": "c",
-        "options.h": "c"
+        "options.h": "c",
+        "*.res": "plaintext"
+    },
+    "terminal.integrated.env.windows": {
+        "PATH": "${env:GDK}/bin;${env:PATH}"
+    },
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools"
     }
 }

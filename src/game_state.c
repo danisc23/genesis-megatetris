@@ -83,3 +83,28 @@ void stateGameOver()
     while (game_state == GAME_STATE_GAME_OVER)
         SYS_doVBlankProcess();
 }
+
+void stateCredits()
+{
+    prepareNextState();
+    JOY_setEventHandler(joyCredits);
+
+    drawMainMenuTitle();
+    drawMainMenuFooter();
+
+    VDP_drawText("Developer:", 5, 12);
+    VDP_drawText("  danisc23", 5, 13);
+    VDP_drawText("  Portfolio: sc23.site", 5, 14);
+
+    VDP_drawText("Music:", 5, 16);
+    VDP_drawText("  JXChip", 5, 17);
+    VDP_drawText("  Sonic Adventure 2", 5, 18);
+    VDP_drawText("  Hero Garden YM2612 version", 5, 19);
+
+    VDP_drawText("Engine:", 5, 21);
+    VDP_drawText("  SGDK (Sega Genesis", 5, 22);
+    VDP_drawText("  Development Kit)", 5, 23);
+
+    while (game_state == GAME_STATE_CREDITS)
+        SYS_doVBlankProcess();
+}

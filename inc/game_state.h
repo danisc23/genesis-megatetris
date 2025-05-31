@@ -6,5 +6,6 @@ void stateOptions();
 void statePlaying();
 void statePause();
 void stateGameOver();
+void stateCredits();
 
 #endif // __GAME_STATE_H

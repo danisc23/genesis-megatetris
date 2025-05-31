@@ -33,13 +33,14 @@ GameConfig game_config = {
 
 // Main Menu
 static int selected_option = 0;
-char menu_options[6][22] = {
+char menu_options[7][22] = {
     "Start Game",
     "Level: 1",
     "Lines: 0",
     "See Next: YES",
     "Ghost Hint: NO",
-    "Options"};
+    "Options",
+    "Credits"};
 
 // Current Game
 int freezed_tick = 0; // Used to track elapsed time when game is paused
@@ -47,7 +48,7 @@ u32 score = 0;
 u16 total_lines_cleared = 0;
 s8 lines_for_next_level = 0;
 u8 level = 1;
-int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X] = {0};
 
 static u8 SRAM_HIGHSCORE_OFFSET = 0x00;
 static u8 SRAM_OPTIONS_OFFSET = 0x05;
@@ -453,6 +454,11 @@ void triggerSelectedOption(int button_pressed, int direction)
         if (!button_pressed)
             break;
         updateGameStateOnCondition(TRUE, GAME_STATE_OPTIONS);
+        break;
+    case 6:
+        if (!button_pressed)
+            break;
+        updateGameStateOnCondition(TRUE, GAME_STATE_CREDITS);
         break;
     }
 }
