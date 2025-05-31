@@ -2,3 +2,5 @@ out/*
 !out/rom.bin
 src/boot/
 res/*.h
+gens
+VSCODE_SETUP.md

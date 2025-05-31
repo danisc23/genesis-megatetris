@@ -1,0 +1,206 @@
+{
+    "version": "2.0.0",
+    "tasks": [        {
+            "label": "Build SGDK Project",
+            "type": "shell",
+            "command": "${env:GDK}/bin/make.exe",
+            "args": [
+                "-f",
+                "${env:GDK}/makefile.gen"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$gcc",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Build SGDK Project (Debug)",
+            "type": "shell",
+            "command": "${env:GDK}/bin/make.exe",
+            "args": [
+                "-f",
+                "${env:GDK}/makefile.gen",
+                "debug"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$gcc",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },        {
+            "label": "Clean SGDK Project",
+            "type": "shell",
+            "command": "${env:GDK}/bin/make.exe",
+            "args": [
+                "-f",
+                "${env:GDK}/makefile.gen",
+                "clean"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Run in Emulator",
+            "type": "shell",
+            "command": "start",
+            "args": [
+                "${workspaceFolder}/out/rom.bin"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "Build SGDK Project"
+        },
+        {
+            "label": "Run ROM in Gens (Standard)",
+            "type": "shell",
+            "command": "Z:/mdProjects/gens-win32-bin-2.14/gens.exe",
+            "args": [
+                "${workspaceFolder}/out/rom.bin"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "isBackground": true,
+            "options": {
+                "cwd": "Z:/mdProjects/gens-win32-bin-2.14"
+            },
+            "dependsOn": "Build SGDK Project"
+        },
+        {
+            "label": "Run ROM in GensKMod",
+            "type": "shell",
+            "command": "${workspaceFolder}/gens/gens.exe",
+            "args": [
+                "${workspaceFolder}/out/rom.bin"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "isBackground": true,
+            "options": {
+                "cwd": "${workspaceFolder}/gens"
+            },
+            "dependsOn": "Build SGDK Project"
+        },
+        {
+            "label": "Start GensKMod Debug Server",
+            "type": "shell",
+            "command": "${workspaceFolder}/gens/gens.exe",
+            "args": [
+                "-debug",
+                "-port", "6868"
+            ],
+            "group": "test",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/gens"
+            }
+        },        {
+            "label": "Debug ROM in GensKMod",
+            "type": "shell",
+            "command": "${workspaceFolder}/gens/gens.exe",
+            "args": [
+                "-debug",
+                "-port", "6868",
+                "${workspaceFolder}/out/rom.bin"
+            ],
+            "group": "test",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/gens"
+            },
+            "dependsOn": "Build SGDK Project (Debug)"
+        },
+        {
+            "label": "Build and Run",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build SGDK Project",
+                "Run in Emulator"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build and Run in GensKMod",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build SGDK Project",
+                "Run ROM in GensKMod"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            }
+        },        {
+            "label": "Build and Debug in GensKMod",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Build SGDK Project (Debug)",
+                "Debug ROM in GensKMod"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            }
+        }
+    ]
+}

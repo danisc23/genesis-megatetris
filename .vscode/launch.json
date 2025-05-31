@@ -3,28 +3,34 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [
-
-        {
+    "configurations": [        {
             "name": "Debug with gdb remote",
             "request": "launch",
             "type": "cppdbg",
-            "program": "${workspaceRoot}\\out\\rom.out",
-            "miDebuggerServerAddress": "localhost:6868",//GensKMod debug port. Change it for use another ports
+            "program": "${workspaceRoot}/out/rom.out",
+            "miDebuggerServerAddress": "localhost:6868",
             "sourceFileMap": {
-                "d:\\apps\\sgdk\\src\\": "${env:GDK}\\src\\",
+                "/c/Users/Usuario/genesis-megatetris/": "${workspaceFolder}/",
+                "C:\\Users\\Usuario\\genesis-megatetris\\": "${workspaceFolder}\\",
+                "${env:GDK}/src/": "${env:GDK}/src/"
             },
             "args": [],
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
             "launchCompleteCommand": "exec-continue",
-            "miDebuggerPath": "${env:GDK}\\bin\\gdb.exe",
+            "miDebuggerPath": "${env:GDK}/bin/gdb.exe",
             "setupCommands": [
                 {
-                    "text": "set directories '${workspaceFolder};$cwd;$cdir'"
+                    "text": "set directories '${workspaceFolder};${workspaceFolder}/src;${workspaceFolder}/inc;$cwd;$cdir'"
+                },
+                {
+                    "text": "set substitute-path '/c/Users/Usuario/genesis-megatetris/' '${workspaceFolder}/'"
+                },
+                {
+                    "text": "set substitute-path 'C:\\Users\\Usuario\\genesis-megatetris\\' '${workspaceFolder}\\'"
                 }
             ]
         }
