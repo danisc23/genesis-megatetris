@@ -115,3 +115,13 @@ void joyGameOverMenu(u16 joy, u16 changed, u16 state)
         return;
     updateGameStateOnCondition(state & changed & BUTTON_START, GAME_STATE_MENU);
 }
+
+void joyCredits(u16 joy, u16 changed, u16 state)
+{
+    if (joy != JOY_1 || !state)
+        return;
+
+    // Any button press returns to main menu
+    int any_button = state & changed & (BUTTON_A | BUTTON_B | BUTTON_C | BUTTON_START | BUTTON_X | BUTTON_Y | BUTTON_Z);
+    updateGameStateOnCondition(any_button, GAME_STATE_MENU);
+}

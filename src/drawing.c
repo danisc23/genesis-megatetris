@@ -28,9 +28,8 @@ void drawMainMenuFooter()
 {
     char hiscore_text[40];
     sprintf(hiscore_text, "Hi: %ld            ", hiscore);
-    VDP_drawText(hiscore_text, 1, MAX_Y - 3);
+    VDP_drawText(hiscore_text, 1, MAX_Y - 2);
 
-    VDP_drawText("danisc23", MAX_X - 9, MAX_Y - 3);
     VDP_drawText(GAME_VERSION, MAX_X - 19, MAX_Y - 2);
 }
 

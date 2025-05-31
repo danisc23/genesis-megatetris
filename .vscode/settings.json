@@ -26,5 +26,8 @@
     },
     "terminal.integrated.env.windows": {
         "PATH": "${env:GDK}/bin;${env:PATH}"
+    },
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools"
     }
 }

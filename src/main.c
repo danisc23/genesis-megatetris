@@ -37,6 +37,9 @@ int main()
     case GAME_STATE_GAME_OVER:
       stateGameOver();
       break;
+    case GAME_STATE_CREDITS:
+      stateCredits();
+      break;
     }
   }
   return (0);
