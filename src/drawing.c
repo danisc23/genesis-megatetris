@@ -4,7 +4,7 @@
 static int last_drawn_pointer = OPTIONS_Y_OFFSET;
 
 // Used to reduce flickering on redraws
-static int drawn_solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+static int drawn_solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X] = {0};
 
 void drawMainMenuTitle()
 {
@@ -26,7 +26,7 @@ static void drawMainMenuOptions()
 
 void drawMainMenuFooter()
 {
-    char hiscore_text[30];
+    char hiscore_text[40];
     sprintf(hiscore_text, "Hi: %ld            ", hiscore);
     VDP_drawText(hiscore_text, 1, MAX_Y - 3);
 
@@ -51,9 +51,9 @@ void drawMainMenu()
 
 void drawUI()
 {
-    char score_text[15];
-    char level_text[10];
-    char lines_text[15];
+    char score_text[20];
+    char level_text[15];
+    char lines_text[20];
     sprintf(score_text, "Score: %ld", score);
     sprintf(level_text, "Level: %d", level);
     sprintf(lines_text, "Lines: %d", total_lines_cleared);
@@ -65,8 +65,9 @@ void drawUI()
 
 void drawGameArea()
 {
-    char horizontal[GAME_GRID_X + 2];
+    char horizontal[GAME_GRID_X + 3];
     memset(horizontal, '-', GAME_GRID_X + 2);
+    horizontal[GAME_GRID_X + 2] = '\0';
     VDP_drawText(horizontal, GAME_AREA.left, GAME_AREA.up);
     VDP_drawText(horizontal, GAME_AREA.left, GAME_AREA.down);
     for (int i = GAME_AREA.up + 1; i < GAME_AREA.down; i++)

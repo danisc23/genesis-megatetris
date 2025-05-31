@@ -47,7 +47,7 @@ u32 score = 0;
 u16 total_lines_cleared = 0;
 s8 lines_for_next_level = 0;
 u8 level = 1;
-int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X] = {0};
 
 static u8 SRAM_HIGHSCORE_OFFSET = 0x00;
 static u8 SRAM_OPTIONS_OFFSET = 0x05;
