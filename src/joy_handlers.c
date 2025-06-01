@@ -43,10 +43,9 @@ void joyOptions(u16 joy, u16 changed, u16 state)
     int c_pressed = state & changed & BUTTON_C;
     int left_pressed = state & changed & BUTTON_LEFT;
     int right_pressed = state & changed & BUTTON_RIGHT;
-
     int direction = sign(right_pressed) - sign(left_pressed);
-    int input = sign(start_pressed || a_pressed || b_pressed);
-    int quick_exit = sign(c_pressed);
+    int input = sign(start_pressed || a_pressed);
+    int back_button = sign(b_pressed || c_pressed);
     int pointer_dir = down - up;
 
     if (pointer_dir)
@@ -55,9 +54,11 @@ void joyOptions(u16 joy, u16 changed, u16 state)
         OPT_moveOptionValue(direction);
     else if (input)
         OPT_triggerOption();
-    else if (quick_exit)
+    else if (back_button)
     {
         saveGameData();
+        selected_option = 0;
+        resetMenuPointer();
         game_state = GAME_STATE_MENU;
     }
 }
@@ -113,7 +114,12 @@ void joyGameOverMenu(u16 joy, u16 changed, u16 state)
 {
     if (joy != JOY_1 || !state)
         return;
-    updateGameStateOnCondition(state & changed & BUTTON_START, GAME_STATE_MENU);
+    if (state & changed & BUTTON_START)
+    {
+        selected_option = 0;
+        resetMenuPointer();
+        game_state = GAME_STATE_MENU;
+    }
 }
 
 void joyCredits(u16 joy, u16 changed, u16 state)
@@ -123,5 +129,39 @@ void joyCredits(u16 joy, u16 changed, u16 state)
 
     // Any button press returns to main menu
     int any_button = state & changed & (BUTTON_A | BUTTON_B | BUTTON_C | BUTTON_START | BUTTON_X | BUTTON_Y | BUTTON_Z);
-    updateGameStateOnCondition(any_button, GAME_STATE_MENU);
+    if (any_button)
+    {
+        selected_option = 0;
+        resetMenuPointer();
+        game_state = GAME_STATE_MENU;
+    }
+}
+
+void joyGameSettingsMenu(u16 joy, u16 changed, u16 state)
+{
+    if (joy != JOY_1 || !state)
+        return;
+    int start_pressed = state & changed & BUTTON_START;
+    int up = sign(state & changed & BUTTON_UP);
+    int down = sign(state & changed & BUTTON_DOWN);
+    int a_pressed = state & changed & BUTTON_A;
+    int b_pressed = state & changed & BUTTON_B;
+    int c_pressed = state & changed & BUTTON_C;
+    int left_pressed = state & changed & BUTTON_LEFT;
+    int right_pressed = state & changed & BUTTON_RIGHT;
+    int direction = sign(right_pressed || a_pressed || c_pressed) - sign(left_pressed || b_pressed);
+    int button = sign(start_pressed || a_pressed || b_pressed || c_pressed);
+    int pointer_dir = down - up;
+
+    if (pointer_dir)
+        drawGameSettingsMenuPointer(updateSelectedGameSetting(pointer_dir));
+    else if (direction || button)
+        triggerSelectedGameSetting(button, direction);
+    else if (b_pressed || c_pressed)
+    {
+        saveGameData();
+        selected_option = 0;
+        resetMenuPointer();
+        game_state = GAME_STATE_MENU;
+    }
 }

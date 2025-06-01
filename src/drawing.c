@@ -6,6 +6,11 @@ static int last_drawn_pointer = OPTIONS_Y_OFFSET;
 // Used to reduce flickering on redraws
 static int drawn_solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X] = {0};
 
+void resetMenuPointer()
+{
+    last_drawn_pointer = OPTIONS_Y_OFFSET;
+}
+
 void drawMainMenuTitle()
 {
     VDP_drawText(TITLE_1, 0, 1);
@@ -44,7 +49,29 @@ void drawMainMenu()
 {
     drawMainMenuTitle();
     drawMainMenuOptions();
-    drawMainMenuPointer(last_drawn_pointer - OPTIONS_Y_OFFSET);
+    drawMainMenuPointer(selected_option);
+    drawMainMenuFooter();
+}
+
+static void drawGameSettingOptions()
+{
+    int max_options = sizeof(game_setting_options) / sizeof(game_setting_options[0]);
+    for (u8 i = 0; i < max_options; i++)
+        VDP_drawText(game_setting_options[i], 12, OPTIONS_Y_OFFSET + i);
+}
+
+void drawGameSettingsMenuPointer(int selected_option)
+{
+    VDP_clearTextBG(BG_B, 10, last_drawn_pointer, 1);
+    last_drawn_pointer = OPTIONS_Y_OFFSET + selected_option;
+    VDP_drawTextBG(BG_B, ">", 10, last_drawn_pointer);
+}
+
+void drawGameSettingsMenu()
+{
+    drawMainMenuTitle();
+    drawGameSettingOptions();
+    drawGameSettingsMenuPointer(selected_game_setting);
     drawMainMenuFooter();
 }
 

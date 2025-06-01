@@ -1,12 +1,15 @@
 #ifndef __DRAWING_H
 #define __DRAWING_H
 
-#define OPTIONS_Y_OFFSET 15
+#define OPTIONS_Y_OFFSET 16
 
+void resetMenuPointer();
 void drawMainMenuTitle();
 void drawMainMenuPointer(int selected_option);
 void drawMainMenu();
 void drawMainMenuFooter();
+void drawGameSettingsMenuPointer(int selected_option);
+void drawGameSettingsMenu();
 void drawUI();
 void drawGameArea();
 void drawCurrentTetromino();

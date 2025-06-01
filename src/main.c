@@ -25,6 +25,9 @@ int main()
     case GAME_STATE_MENU:
       stateMenu();
       break;
+    case GAME_STATE_GAME_SETTINGS:
+      stateGameSettings();
+      break;
     case GAME_STATE_OPTIONS:
       stateOptions();
       break;

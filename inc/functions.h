@@ -22,8 +22,11 @@ extern int hold_x_dir;
 extern int hold_y_dir;
 
 // Main Menu
-extern char menu_options[7][22];
+extern char menu_options[4][22];
+extern char game_setting_options[7][22];
 extern GameConfig game_config;
+extern int selected_option;
+extern int selected_game_setting;
 
 // Current Game
 extern int freezed_tick; // Used to track elapsed time when game is paused
@@ -50,5 +53,9 @@ bool checkBottomCollision(int pos_x, int pos_y);
 int updateGameStateOnCondition(int condition, enum GAME_STATE);
 int updateSelectedOption(int direction);
 void triggerSelectedOption(int button_pressed, int direction);
+
+int updateSelectedGameSetting(int direction);
+void triggerSelectedGameSetting(int button_pressed, int direction);
+void updateGameSettingsText();
 
 #endif // __FUNCTIONS_H

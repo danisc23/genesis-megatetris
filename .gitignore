@@ -1,6 +1,7 @@
 out/*
 !out/rom.bin
-src/boot/
+src/boot/*
+!src/boot/rom_head.c
 res/*.h
 gens
 VSCODE_SETUP.md
