@@ -2,6 +2,7 @@
 #define __GAME_STATE_H
 
 void stateMenu();
+void stateGameSettings();
 void stateOptions();
 void statePlaying();
 void statePause();

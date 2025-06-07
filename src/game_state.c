@@ -21,7 +21,20 @@ void stateMenu()
     drawMainMenu();
     while (game_state == GAME_STATE_MENU)
         SYS_doVBlankProcess();
-    prepareNewGame();
+    if (game_state == GAME_STATE_PLAYING)
+        prepareNewGame();
+}
+
+void stateGameSettings()
+{
+    prepareNextState();
+    JOY_setEventHandler(joyGameSettingsMenu);
+    updateGameSettingsText();
+    drawGameSettingsMenu();
+    while (game_state == GAME_STATE_GAME_SETTINGS)
+        SYS_doVBlankProcess();
+    if (game_state == GAME_STATE_PLAYING)
+        prepareNewGame();
 }
 
 void statePlaying()
@@ -32,6 +45,7 @@ void statePlaying()
     drawUI();
     drawSolidifiedTetrominoParts(1);
     drawNextTetromino();
+    drawPieceCounters();
     startTimer(DROP_DOWN_TIMER);
     while (game_state == GAME_STATE_PLAYING)
     {
@@ -92,18 +106,17 @@ void stateCredits()
     drawMainMenuTitle();
     drawMainMenuFooter();
 
-    VDP_drawText("Developer:", 5, 12);
-    VDP_drawText("  danisc23", 5, 13);
-    VDP_drawText("  Portfolio: sc23.site", 5, 14);
+    VDP_drawText("Developed by Danisc23", 4, 12);
+    VDP_drawText("  Portfolio: sc23.site", 4, 13);
+    VDP_drawText("  Games: danisc23.itch.io", 4, 14);
 
-    VDP_drawText("Music:", 5, 16);
-    VDP_drawText("  JXChip", 5, 17);
-    VDP_drawText("  Sonic Adventure 2", 5, 18);
-    VDP_drawText("  Hero Garden YM2612 version", 5, 19);
+    VDP_drawText("Music by JXChip:", 4, 16);
+    VDP_drawText("  Sonic Adv 2: Hero Garden (YM2612)", 4, 17);
 
-    VDP_drawText("Engine:", 5, 21);
-    VDP_drawText("  SGDK (Sega Genesis", 5, 22);
-    VDP_drawText("  Development Kit)", 5, 23);
+    VDP_drawText("Created with SGDK", 4, 19);
+
+    VDP_drawText("This game is 100% FREE!", 4, 21);
+    VDP_drawText("If you paid for it, let me know!", 4, 22);
 
     while (game_state == GAME_STATE_CREDITS)
         SYS_doVBlankProcess();

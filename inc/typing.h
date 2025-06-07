@@ -23,6 +23,9 @@ typedef struct
     u8 draw_ghost_tetromino;
     u8 starting_level;
     u8 floor_level;
+    u8 algorithm;
+    u8 tetromino_set;
+    u8 show_piece_counter;
     u8 shift_grid;
 } GameConfig;
 
@@ -30,6 +33,7 @@ enum GAME_STATE
 {
     GAME_STATE_MENU,
     GAME_STATE_OPTIONS,
+    GAME_STATE_GAME_SETTINGS,
     GAME_STATE_PLAYING,
     GAME_STATE_PAUSED,
     GAME_STATE_GAME_OVER,

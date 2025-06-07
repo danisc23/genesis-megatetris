@@ -28,6 +28,7 @@
         "PATH": "${env:GDK}/bin;${env:PATH}"
     },
     "[c]": {
-        "editor.defaultFormatter": "ms-vscode.cpptools"
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true
     }
 }
