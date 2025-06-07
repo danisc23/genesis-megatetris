@@ -45,6 +45,7 @@ void statePlaying()
     drawUI();
     drawSolidifiedTetrominoParts(1);
     drawNextTetromino();
+    drawPieceCounters();
     startTimer(DROP_DOWN_TIMER);
     while (game_state == GAME_STATE_PLAYING)
     {

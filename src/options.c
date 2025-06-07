@@ -80,7 +80,6 @@ s8 OPT_getSelectedControls()
 void OPT_drawOptions()
 {
     u8 menuOffset = OPTIONS_Y_OFFSET;
-    // VDP_drawText("- OPTIONS -", SCREEN_CENTER_X - 6, menuOffset++);
     VDP_drawText("Color:", 4, menuOffset++);
     VDP_drawText(TEXT_COLOR[(u8)options.color], 6, menuOffset++);
     menuOffset++;

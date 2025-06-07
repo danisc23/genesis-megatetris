@@ -23,8 +23,10 @@ typedef struct
     u8 draw_ghost_tetromino;
     u8 starting_level;
     u8 floor_level;
-    u8 shift_grid;
+    u8 algorithm;
     u8 tetromino_set;
+    u8 show_piece_counter;
+    u8 shift_grid;
 } GameConfig;
 
 enum GAME_STATE

@@ -57,13 +57,13 @@ static void drawGameSettingOptions()
 {
     int max_options = sizeof(game_setting_options) / sizeof(game_setting_options[0]);
     for (u8 i = 0; i < max_options; i++)
-        VDP_drawText(game_setting_options[i], 12, OPTIONS_Y_OFFSET + i);
+        VDP_drawText(game_setting_options[i], 12, GAME_SETTINGS_Y_OFFSET + i);
 }
 
 void drawGameSettingsMenuPointer(int selected_option)
 {
     VDP_clearTextBG(BG_B, 10, last_drawn_pointer, 1);
-    last_drawn_pointer = OPTIONS_Y_OFFSET + selected_option;
+    last_drawn_pointer = GAME_SETTINGS_Y_OFFSET + selected_option;
     VDP_drawTextBG(BG_B, ">", 10, last_drawn_pointer);
 }
 
@@ -207,5 +207,22 @@ void clearTetrominoLastPosition()
         int x = current_x + current_tetromino[i].x;
         int y = current_y + current_tetromino[i].y;
         VDP_clearTextBG(BG_B, x, y, 1);
+    }
+}
+
+void drawPieceCounters()
+{
+    if (!game_config.show_piece_counter)
+        return;
+
+    char piece_names[7] = {'I', 'O', 'L', 'J', 'S', 'Z', 'T'};
+
+    VDP_drawText("Stats", 8, 14);
+    VDP_drawText("-----", 8, 15);
+    for (int i = 0; i < 7; i++)
+    {
+        char counter_text[10];
+        sprintf(counter_text, "%c:%03d", piece_names[i], piece_counters[i]);
+        VDP_drawText(counter_text, 8, 16 + i);
     }
 }

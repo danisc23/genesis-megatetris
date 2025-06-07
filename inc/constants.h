@@ -13,6 +13,9 @@
 #define TETROMINO_SET_Z 6
 #define TETROMINO_SET_T 7
 
+#define ALGORITHM_RANDOM 0
+#define ALGORITHM_FAIR 1
+
 #define SFX_ID_CLEAR_LINE 64
 #define SFX_ID_SOLIDIFY 65
 #define SFX_ID_MOVE 66

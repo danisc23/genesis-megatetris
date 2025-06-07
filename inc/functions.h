@@ -23,7 +23,7 @@ extern int hold_y_dir;
 
 // Main Menu
 extern char menu_options[4][22];
-extern char game_setting_options[7][22];
+extern char game_setting_options[9][22];
 extern GameConfig game_config;
 extern int selected_option;
 extern int selected_game_setting;
@@ -35,6 +35,9 @@ extern u16 total_lines_cleared;
 extern s8 lines_for_next_level;
 extern u8 level;
 extern int solid_tetromino_parts[GAME_GRID_Y][GAME_GRID_X];
+
+// Piece counter arrays
+extern int piece_counters[7];
 
 void loadGameData();
 void saveGameData();
@@ -57,5 +60,8 @@ void triggerSelectedOption(int button_pressed, int direction);
 int updateSelectedGameSetting(int direction);
 void triggerSelectedGameSetting(int button_pressed, int direction);
 void updateGameSettingsText();
+
+// Piece counter functions
+void resetPieceCounters();
 
 #endif // __FUNCTIONS_H
